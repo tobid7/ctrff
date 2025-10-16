@@ -31,7 +31,8 @@ add_library(ctrff STATIC
     source/bcwav.cpp
     source/3dsx.cpp
 )
-target_include_directories(ctrff PUBLIC include vendor/palladium/include)
+target_include_directories(ctrff PUBLIC include)
+target_include_directories(ctrff PRIVATE vendor/palladium/include)
 
 if(${CTRFF_DESKTOP})
     add_executable(ctrff-cli tool/main.cpp)
