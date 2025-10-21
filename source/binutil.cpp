@@ -21,7 +21,7 @@ void BinUtil::Read(T& v) {
   // Read data into buffer
   m_file.read(reinterpret_cast<char*>(buf.data()), sizeof(T));
   // Loop or in be reverse loop and chift the values
-  for (int i = 0; i < sizeof(T); i++) {
+  for (size_t i = 0; i < sizeof(T); i++) {
     v |= static_cast<T>(buf[m_big ? sizeof(T) - 1 - i : i]) << (8 * i);
   }
 }

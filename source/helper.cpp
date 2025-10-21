@@ -31,8 +31,8 @@ CTRFF_API void ctrff::RGB565toRGBA(std::vector<PD::u8> &img, PD::u16 *icon,
     img.resize(48 * 48 * 4);
     img.clear();
   }
-  for (PD::u32 y = 0; y < h; y++) {
-    for (PD::u32 x = 0; x < w; x++) {
+  for (int y = 0; y < h; y++) {
+    for (int x = 0; x < w; x++) {
       auto idx = TileIndex(x, y, w);
       PD::u32 pos = (y * w + x) * 4;
       MakePixelRGBA(img[pos + 0], img[pos + 1], img[pos + 2], img[pos + 3],
@@ -45,8 +45,8 @@ CTRFF_API void ctrff::RGBA2RGB565(PD::u16 *out, const std::vector<PD::u8> &img,
                                   const int &w, const int &h) {
   if (img.size() != size_t(w * h * 4)) return;
   std::vector<PD::u8> px8 = img;
-  for (PD::u32 y = 0; y < h; y++) {
-    for (PD::u32 x = 0; x < w; x++) {
+  for (int y = 0; y < h; y++) {
+    for (int x = 0; x < w; x++) {
       auto idx = TileIndex(x, y, w);
       PD::u32 pos = (y * w + x) * 4;
       out[idx] = MakePixel565(img[pos], img[pos + 1], img[pos + 2]);
@@ -148,7 +148,7 @@ CTRFF_API std::string ctrff::U16toU8(PD::u16 *in, size_t max) {
       result.push_back(static_cast<char>(0x80 | (c & 0x3F)));
     } else if (c < 0x10000) {
       result.push_back(static_cast<char>(0xE0 | (c >> 12)));
-      result.push_back(static_cast<char>(0x80 | ((c >> 6) & 0x3F)));
+result.push_back(static_cast<char>(0x80 | ((c >> 6) & 0x3F)));
       result.push_back(static_cast<char>(0x80 | (c & 0x3F)));
     } else {
       continue;
