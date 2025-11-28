@@ -162,8 +162,12 @@ CTRFF_API void BCSTM::ReadGotoBeginning(bool use_loop_beg) {
 }
 
 CTRFF_API void BCSTM::ReadBlock(PD::u32 block, PD::u8* ref) {
+  if (!ref) {
+    throw std::runtime_error("BCSTM: pointer ref is nullptr!");
+  }
   if (pFile.tellg() > pHeader.FileSize || block >= GetNumBlocks()) {
-    throw std::runtime_error("BCSTM: Decode block Out of range!");
+    throw std::runtime_error(std::format(
+        "BCSTM: Decode block out of range! ({}/{})", block, GetNumBlocks()));
   }
   pFile.read(
       reinterpret_cast<char*>(ref),
