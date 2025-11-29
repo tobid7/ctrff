@@ -29,13 +29,13 @@ class CTRFF_API BCSTM {
   }
   bool IsLooping() const { return pInfoBlock.StreamInfo.Loop; }
   PD::u32 GetLoopStart() const {
-    return pInfoBlock.StreamInfo.LoopStartFrame / GetNumBlocks();
+    return pInfoBlock.StreamInfo.LoopStartFrame / GetBlockSamples();
   }
   PD::u32 GetLoopEnd() const {
     /** Get temp references for better readability */
     const PD::u32& loop_end = pInfoBlock.StreamInfo.LoopEndFrame;
-    const PD::u32& block_samples = GetNumBlocks();
-    return (loop_end % block_samples ? block_samples
+    const PD::u32& block_samples = GetBlockSamples();
+    return (loop_end % block_samples ? GetNumBlocks()
                                      : loop_end / block_samples);
   }
 
