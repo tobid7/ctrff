@@ -138,6 +138,7 @@ class CTRFF_API BCSTM {
     DSP_ADPCM_Param() {}
     PD::u16 Coefficients[0x10];
   };
+
   struct DSP_ADPCM_Context {
     DSP_ADPCM_Context()
         : PredictorScale(0),

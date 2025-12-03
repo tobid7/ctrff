@@ -147,15 +147,10 @@ CTRFF_API void BCSTM::ReadGotoBeginning(bool use_loop_beg) {
   size_t off = pDataBlockRef.Ref.Offset + 0x20;
   /** Shift to loop start if enabled */
   if (use_loop_beg) {
-    off += GetNumBlocks() * GetNumChannels() * GetLoopStart();
-    // off += GetNumChannels() * pInfoBlock.StreamInfo.LoopStartFrame;
+    off += GetLoopStart() * GetBlockSize() * GetNumChannels();
   }
-  // block_size * channel_count * loop_start
-  try {
-    pFile.seekg(off, std::ios::beg);
-  } catch (const std::exception& e) {
-    throw std::runtime_error(e.what());
-  }
+  pFile.seekg(off, std::ios::beg);
+
   if (pFile.tellg() > pHeader.FileSize) {
     throw std::runtime_error("BCSTM: Seeked Out of range!");
   }
