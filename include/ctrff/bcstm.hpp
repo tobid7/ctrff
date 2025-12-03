@@ -14,7 +14,6 @@ class CTRFF_API BCSTM {
   void CleanUp();
   void ReadGotoBeginning(bool use_loop_beg = false);
   void ReadBlock(PD::u32 block, PD::u8* ref);
-  PD::u32 LeseZeiger() { return pFile.tellg(); }
 
   /** Some useful Getters */
   PD::u8 GetNumChannels() const { return pInfoBlock.StreamInfo.ChannelCount; }
