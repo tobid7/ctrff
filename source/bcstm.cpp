@@ -97,9 +97,9 @@ CTRFF_API void BCSTM::ReadInfoBlock(InfoBlock& block) {
                 std::ios::beg);
     Reference r;
     ReadReference(r);
-    block.ChannelInfoRefs.Add(r);
+    block.ChannelInfoRefs.push_back(r);
   }
-  for (size_t i = 0; i < block.ChannelInfoRefs.Size(); i++) {
+  for (size_t i = 0; i < block.ChannelInfoRefs.size(); i++) {
     size_t off = pInfoBlockRef.Ref.Offset;
     off += sizeof(BlockHeader);
     off += block.ChannelInfoTabRef.Offset;
@@ -108,7 +108,7 @@ CTRFF_API void BCSTM::ReadInfoBlock(InfoBlock& block) {
     pFile.seekg(off, std::ios::beg);
     DSP_ADPCM_Info t;  /** temp */
     pReader.ReadEx(t); /** This Section gets read normally */
-    pDSP_ADPCM_Info.Add(t);
+    pDSP_ADPCM_Info.push_back(t);
   }
 }
 
@@ -119,23 +119,23 @@ CTRFF_API void BCSTM::ReadSeekBlock(SD_Block& block) {
     throw std::runtime_error("BCSTM: SeekBlock Size is not 0x20 aligned!");
   }
 
-  pSeekBlock.Data.Reserve(pSeekBlock.Header.Size + 1);
+  pSeekBlock.Data.reserve(pSeekBlock.Header.Size + 1);
   for (PD::u32 i = 0; i < pSeekBlock.Header.Size; i++) {
     PD::u8 v;
     pReader.Read(v);
-    pSeekBlock.Data.Add(v);
+    pSeekBlock.Data.push_back(v);
   }
 }
 
 CTRFF_API void BCSTM::ReadReferenceTab(ReferenceTable& tab) {
   pReader.Read(tab.Count);
-  tab.Refs.Reserve(tab.Count + 1);
+  tab.Refs.reserve(tab.Count + 1);
   for (PD::u32 i = 0; i < tab.Count; i++) {
     Reference r;
     pReader.Read(r.TypeID);
     pReader.Read(r.Padding);
     pReader.Read(r.Offset);
-    tab.Refs.Add(r);
+    tab.Refs.push_back(r);
   }
 }
 
@@ -183,11 +183,32 @@ CTRFF_API void BCSTM::CleanUp() {
       throw std::runtime_error(e.what());
     }
   }
-  pInfoBlock.ChannelInfoRefs.Clear();
-  pInfoBlock.ChannelInfoTab.Refs.Clear();
-  pInfoBlock.ChannelInfoTab.Count = 0;
-  pInfoBlock.TrackInfoTab.Refs.Clear();
-  pInfoBlock.TrackInfoTab.Count = 0;
-  pDSP_ADPCM_Info.Clear();
+  pInfoBlock = InfoBlock();
+  pHeader = Header();
+  pInfoBlockRef = SizedReference();
+  pSeekBlockRef = SizedReference();
+  pDataBlockRef = SizedReference();
+  pInfoBlock = InfoBlock();
+  pSeekBlock = SD_Block();
+  pDataBlock = SD_Block();
+  pDSP_ADPCM_Info.clear();
+}
+
+CTRFF_API BCSTM::StreamInfo::StreamInfo() {
+  ChannelCount = 0;
+  Encoding = 0;
+  LastSampleBlockPaddedSize = 0;
+  LastSampleBlockSampleNum = 0;
+  LastSampleBlockSize = 0;
+  Loop = 0;
+  LoopEndFrame = 0;
+  LoopStartFrame = 0;
+  Padding = 0;
+  SampleBlockNum = 0;
+  SampleBlockSampleNum = 0;
+  SampleBlockSize = 0;
+  SampleRate = 0;
+  SeekDataSize = 0;
+  SeekIntervalSampleNum = 0;
 }
 }  // namespace ctrff

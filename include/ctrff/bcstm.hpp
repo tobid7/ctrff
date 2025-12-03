@@ -68,22 +68,28 @@ class CTRFF_API BCSTM {
   };
 
   struct Reference {
+    Reference() : TypeID(0), Padding(0), Offset(0) {}
+    Reference(PD::u16 t, PD::u16 p, PD::u32 o)
+        : TypeID(t), Padding(p), Offset(o) {}
     PD::u16 TypeID;
     PD::u16 Padding;
     PD::u32 Offset; /** null -> uint32_max */
   };
 
   struct ReferenceTable {
+    ReferenceTable() : Count(0) {}
     PD::u32 Count;
-    PD::Vec<Reference> Refs;
+    std::vector<Reference> Refs;
   };
 
   struct SizedReference {
+    SizedReference() : Size(0) {}
     Reference Ref;
     PD::u32 Size;
   };
 
   struct StreamInfo {
+    StreamInfo();
     PD::u8 Encoding;
     PD::u8 Loop;
     PD::u8 ChannelCount;
@@ -103,11 +109,14 @@ class CTRFF_API BCSTM {
   };
 
   struct BlockHeader {
+    BlockHeader() : Magic(0), Size(0) {}
+    BlockHeader(PD::u32 m, PD::u32 s) : Magic(m), Size(s) {}
     PD::u32 Magic;
     PD::u32 Size;
   };
 
   struct InfoBlock {
+    InfoBlock() = default;
     BlockHeader Header;
     Reference StreamInfoRef;
     Reference TrackInfoTabRef;
@@ -115,19 +124,27 @@ class CTRFF_API BCSTM {
     BCSTM::StreamInfo StreamInfo;
     ReferenceTable TrackInfoTab;
     ReferenceTable ChannelInfoTab;
-    PD::Vec<Reference> ChannelInfoRefs; /** The refs of the refs ?? */
+    std::vector<Reference> ChannelInfoRefs; /** The refs of the refs ?? */
   };
 
   /** SeekDataBlock cause they are the same struct */
   struct SD_Block {
+    SD_Block() {}
     BlockHeader Header;
-    PD::Vec<PD::u8> Data;
+    std::vector<PD::u8> Data;
   };
 
   struct DSP_ADPCM_Param {
+    // Lets keep this not clean here :/
+    DSP_ADPCM_Param() {}
     PD::u16 Coefficients[0x10];
   };
   struct DSP_ADPCM_Context {
+    DSP_ADPCM_Context()
+        : PredictorScale(0),
+          Reserved(0),
+          PreviousSample(0),
+          SecondPreviousSample(0) {}
     PD::u8 PredictorScale;
     PD::u8 Reserved;
     PD::u16 PreviousSample;
@@ -135,6 +152,7 @@ class CTRFF_API BCSTM {
   };
 
   struct DSP_ADPCM_Info {
+    DSP_ADPCM_Info() : Padding(0) {}
     DSP_ADPCM_Param Param;
     DSP_ADPCM_Context Context;
     DSP_ADPCM_Context LoopContext;
@@ -142,11 +160,13 @@ class CTRFF_API BCSTM {
   };
 
   struct ByteTable {
+    ByteTable(PD::u32 size = 0) : Size(size) {}
     PD::u32 Size;
-    PD::Vec<PD::u8> Table;
+    std::vector<PD::u8> Table;
   };
 
   struct TrackInfo {
+    TrackInfo() : Volume(0), Pan(0), Padding(0) {}
     PD::u8 Volume;
     PD::u8 Pan;
     PD::u16 Padding;
@@ -155,6 +175,15 @@ class CTRFF_API BCSTM {
   };
 
   struct Header {
+    // Warum sieht dass so ~~nicht~~ gut aus...
+    Header()
+        : Magic(0),
+          Endianness(Little),
+          HeaderSize(0),
+          Version(0),
+          FileSize(0),
+          NumBlocks(0),
+          Reserved(0) {}
     PD::u32 Magic;               /** CSTM */
     PD::u16 Endianness = Little; /** Default */
     PD::u16 HeaderSize;          /** Header Size probably */
@@ -171,7 +200,7 @@ class CTRFF_API BCSTM {
   InfoBlock pInfoBlock;
   SD_Block pSeekBlock;
   SD_Block pDataBlock;
-  PD::Vec<DSP_ADPCM_Info> pDSP_ADPCM_Info;
+  std::vector<DSP_ADPCM_Info> pDSP_ADPCM_Info;
   /** File Stream */
   std::fstream pFile;
   /** Endianness based reader */

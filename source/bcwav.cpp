@@ -67,9 +67,9 @@ CTRFF_API void BCWAV::ReadInfoBlock(InfoBlock& block) {
                 std::ios::beg);
     Reference r;
     ReadReference(r);
-    block.ChannelInfoRefs.Add(r);
+    block.ChannelInfoRefs.push_back(r);
   }
-  for (size_t i = 0; i < block.ChannelInfoRefs.Size(); i++) {
+  for (size_t i = 0; i < block.ChannelInfoRefs.size(); i++) {
     size_t off = pInfoBlockRef.Ref.Offset;
     off += sizeof(BlockHeader);
     off += block.ChannelInfoTab.Refs[i].Offset;
@@ -77,19 +77,19 @@ CTRFF_API void BCWAV::ReadInfoBlock(InfoBlock& block) {
     pFile.seekg(off, std::ios::beg);
     DSP_ADPCM_Info t;  /** temp */
     pReader.ReadEx(t); /** This Section gets read normally */
-    pDSP_ADPCM_Info.Add(t);
+    pDSP_ADPCM_Info.push_back(t);
   }
 }
 
 CTRFF_API void BCWAV::ReadReferenceTab(ReferenceTable& tab) {
   pReader.Read(tab.Count);
-  tab.Refs.Reserve(tab.Count + 1);
+  tab.Refs.reserve(tab.Count + 1);
   for (PD::u32 i = 0; i < tab.Count; i++) {
     Reference r;
     pReader.Read(r.TypeID);
     pReader.Read(r.Padding);
     pReader.Read(r.Offset);
-    tab.Refs.Add(r);
+    tab.Refs.push_back(r);
   }
 }
 
@@ -134,9 +134,9 @@ CTRFF_API void BCWAV::CleanUp() {
       throw std::runtime_error(e.what());
     }
   }
-  pInfoBlock.ChannelInfoRefs.Clear();
-  pInfoBlock.ChannelInfoTab.Refs.Clear();
+  pInfoBlock.ChannelInfoRefs.clear();
+  pInfoBlock.ChannelInfoTab.Refs.clear();
   pInfoBlock.ChannelInfoTab.Count = 0;
-  pDSP_ADPCM_Info.Clear();
+  pDSP_ADPCM_Info.clear();
 }
 }  // namespace ctrff

@@ -46,7 +46,7 @@ class CTRFF_API BCWAV {
 
   struct ReferenceTable {
     PD::u32 Count;
-    PD::Vec<Reference> Refs;
+    std::vector<Reference> Refs;
   };
 
   struct SizedReference {
@@ -88,13 +88,13 @@ class CTRFF_API BCWAV {
     PD::u32 LoopEndFrame;
     PD::u32 Reserved;
     ReferenceTable ChannelInfoTab;
-    PD::Vec<Reference> ChannelInfoRefs; /** The refs of the refs ?? */
+    std::vector<Reference> ChannelInfoRefs; /** The refs of the refs ?? */
   };
 
   struct DataBlock {
     BlockHeader Header;
     PD::u32 Padding[3];
-    PD::Vec<PD::u8> Data;
+    std::vector<PD::u8> Data;
   };
 
   struct DSP_ADPCM_Param {
@@ -129,7 +129,7 @@ class CTRFF_API BCWAV {
   SizedReference pDataBlockRef;
   InfoBlock pInfoBlock;
   DataBlock pDataBlock;
-  PD::Vec<DSP_ADPCM_Info> pDSP_ADPCM_Info;
+  std::vector<DSP_ADPCM_Info> pDSP_ADPCM_Info;
   /** File Stream */
   std::fstream pFile;
   /** Endianness based reader */
