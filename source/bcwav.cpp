@@ -69,15 +69,17 @@ CTRFF_API void BCWAV::ReadInfoBlock(InfoBlock& block) {
     ReadReference(r);
     block.ChannelInfoRefs.push_back(r);
   }
-  for (size_t i = 0; i < block.ChannelInfoRefs.size(); i++) {
-    size_t off = pInfoBlockRef.Ref.Offset;
-    off += sizeof(BlockHeader);
-    off += block.ChannelInfoTab.Refs[i].Offset;
-    off += block.ChannelInfoRefs[i].Offset;
-    pFile.seekg(off, std::ios::beg);
-    DSP_ADPCM_Info t;  /** temp */
-    pReader.ReadEx(t); /** This Section gets read normally */
-    pDSP_ADPCM_Info.push_back(t);
+  if (block.Encoding == DSP_ADPCM) {
+    for (size_t i = 0; i < block.ChannelInfoRefs.size(); i++) {
+      size_t off = pInfoBlockRef.Ref.Offset;
+      off += sizeof(BlockHeader);
+      off += block.ChannelInfoTab.Refs[i].Offset;
+      off += block.ChannelInfoRefs[i].Offset;
+      pFile.seekg(off, std::ios::beg);
+      DSP_ADPCM_Info t;  /** temp */
+      pReader.ReadEx(t); /** This Section gets read normally */
+      pDSP_ADPCM_Info.push_back(t);
+    }
   }
 }
 
@@ -102,14 +104,8 @@ CTRFF_API void BCWAV::ReadGotoBeginning(bool use_loop_beg) {
   /** Shift to loop start if enabled */
   if (use_loop_beg) {
     // off += GetNumBlocks() * GetNumChannels() * GetLoopStart();
-    // off += GetNumChannels() * pInfoBlock.StreamInfo.LoopStartFrame;
   }
-  // block_size * channel_count * loop_start
-  try {
-    pFile.seekg(off, std::ios::beg);
-  } catch (const std::exception& e) {
-    throw std::runtime_error(e.what());
-  }
+  pFile.seekg(off, std::ios::beg);
   if (pFile.tellg() > pHeader.FileSize) {
     throw std::runtime_error("BCWAV: Seeked Out of range!");
   }
@@ -134,9 +130,13 @@ CTRFF_API void BCWAV::CleanUp() {
       throw std::runtime_error(e.what());
     }
   }
-  pInfoBlock.ChannelInfoRefs.clear();
-  pInfoBlock.ChannelInfoTab.Refs.clear();
-  pInfoBlock.ChannelInfoTab.Count = 0;
+  pInfoBlock = InfoBlock();
+  pHeader = Header();
+  pInfoBlockRef = SizedReference();
+  pDataBlockRef = SizedReference();
+  // Does not get read idk why i added it
+  // cause it needs to be streamed
+  pDataBlock = DataBlock();
   pDSP_ADPCM_Info.clear();
 }
 }  // namespace ctrff

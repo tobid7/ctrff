@@ -39,46 +39,39 @@ class CTRFF_API BCWAV {
   };
 
   struct Reference {
+    Reference() : TypeID(0), Padding(0), Offset(0) {}
     PD::u16 TypeID;
     PD::u16 Padding;
     PD::u32 Offset; /** null -> uint32_max */
   };
 
   struct ReferenceTable {
+    ReferenceTable() : Count(0) {}
     PD::u32 Count;
     std::vector<Reference> Refs;
   };
 
   struct SizedReference {
+    SizedReference() : Size(0) {}
     Reference Ref;
     PD::u32 Size;
   };
 
-  struct StreamInfo {
-    PD::u8 Encoding;
-    PD::u8 Loop;
-    PD::u8 ChannelCount;
-    PD::u8 Padding;
-    PD::u32 SampleRate;
-    PD::u32 LoopStartFrame;
-    PD::u32 LoopEndFrame;
-    PD::u32 SampleBlockNum;
-    PD::u32 SampleBlockSize;
-    PD::u32 SampleBlockSampleNum;
-    PD::u32 LastSampleBlockSize;
-    PD::u32 LastSampleBlockSampleNum;
-    PD::u32 LastSampleBlockPaddedSize;
-    PD::u32 SeekDataSize;
-    PD::u32 SeekIntervalSampleNum;
-    Reference SampleDataRef;
-  };
-
   struct BlockHeader {
+    BlockHeader() : Magic(0), Size(0) {}
     PD::u32 Magic;
     PD::u32 Size;
   };
 
   struct InfoBlock {
+    InfoBlock()
+        : Encoding(0),
+          Loop(0),
+          Padding(0),
+          SampleRate(0),
+          LoopStartFrame(0),
+          LoopEndFrame(0),
+          Reserved(0) {}
     BlockHeader Header;
     PD::u8 Encoding;
     PD::u8 Loop;
@@ -92,6 +85,11 @@ class CTRFF_API BCWAV {
   };
 
   struct DataBlock {
+    DataBlock() {
+      for (int i = 0; i < 3; i++) {
+        Padding[i] = 0;
+      }
+    }
     BlockHeader Header;
     PD::u32 Padding[3];
     std::vector<PD::u8> Data;
@@ -101,6 +99,11 @@ class CTRFF_API BCWAV {
     PD::u16 Coefficients[0x10];
   };
   struct DSP_ADPCM_Context {
+    DSP_ADPCM_Context()
+        : PredictorScale(0),
+          Reserved(0),
+          PreviousSample(0),
+          SecondPreviousSample(0) {}
     PD::u8 PredictorScale;
     PD::u8 Reserved;
     PD::u16 PreviousSample;
@@ -108,6 +111,7 @@ class CTRFF_API BCWAV {
   };
 
   struct DSP_ADPCM_Info {
+    DSP_ADPCM_Info() : Padding(0) {}
     DSP_ADPCM_Param Param;
     DSP_ADPCM_Context Context;
     DSP_ADPCM_Context LoopContext;
@@ -115,6 +119,14 @@ class CTRFF_API BCWAV {
   };
 
   struct Header {
+    Header()
+        : Magic(0),
+          Endianness(Little),
+          HeaderSize(0),
+          Version(0),
+          FileSize(0),
+          NumBlocks(0),
+          Reserved(0) {}
     PD::u32 Magic;               /** CWAV */
     PD::u16 Endianness = Little; /** Default */
     PD::u16 HeaderSize;          /** Header Size probably */

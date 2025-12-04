@@ -35,7 +35,7 @@ Not all Planned formates are listed here yet
 | Format | State | Notes |
 | ------ | ----- | ----- |
 | 3dsx | Basic Loading and Viewing of Meta Data Smdh | |
-| bcstm | Loading of almost every Data | Not capable of playing them yet (prefetch kernel panic) |
+| bcstm | Loading of almost every Data | Fully done and playable by BCSTM-Player |
 | bcwav | Basic Loading (not tested yet) | Not finished yet |
 | bclim | Nothing done yet (Started creating header) | |
 | lz11 | Encoder done, Decoder missing | Files are bit diffrent to the ones bannertool generates (don't know why) |

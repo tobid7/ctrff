@@ -61,9 +61,6 @@ CTRFF_API void BCSTM::ReadInfoBlock(InfoBlock& block) {
   ReadReference(block.TrackInfoTabRef);
   ReadReference(block.ChannelInfoTabRef);
   pReader.Read(block.StreamInfo.Encoding);
-  if (block.StreamInfo.Encoding != DSP_ADPCM) {
-    throw std::runtime_error("Only DSP ADPCM is supported yet!");
-  }
   pReader.Read(block.StreamInfo.Loop);
   pReader.Read(block.StreamInfo.ChannelCount);
   pReader.Read(block.StreamInfo.Padding);
@@ -99,16 +96,18 @@ CTRFF_API void BCSTM::ReadInfoBlock(InfoBlock& block) {
     ReadReference(r);
     block.ChannelInfoRefs.push_back(r);
   }
-  for (size_t i = 0; i < block.ChannelInfoRefs.size(); i++) {
-    size_t off = pInfoBlockRef.Ref.Offset;
-    off += sizeof(BlockHeader);
-    off += block.ChannelInfoTabRef.Offset;
-    off += block.ChannelInfoTab.Refs[i].Offset;
-    off += block.ChannelInfoRefs[i].Offset;
-    pFile.seekg(off, std::ios::beg);
-    DSP_ADPCM_Info t;  /** temp */
-    pReader.ReadEx(t); /** This Section gets read normally */
-    pDSP_ADPCM_Info.push_back(t);
+  if (block.StreamInfo.Encoding == DSP_ADPCM) {
+    for (size_t i = 0; i < block.ChannelInfoRefs.size(); i++) {
+      size_t off = pInfoBlockRef.Ref.Offset;
+      off += sizeof(BlockHeader);
+      off += block.ChannelInfoTabRef.Offset;
+      off += block.ChannelInfoTab.Refs[i].Offset;
+      off += block.ChannelInfoRefs[i].Offset;
+      pFile.seekg(off, std::ios::beg);
+      DSP_ADPCM_Info t;  /** temp */
+      pReader.ReadEx(t); /** This Section gets read normally */
+      pDSP_ADPCM_Info.push_back(t);
+    }
   }
 }
 

@@ -13,8 +13,7 @@
   - 2.3 [Reference Types](#reference-types)
 - 3 [Block Header](#block-header)
 - 4 [Info Block](#info-block)
-  - 4.1 [Stream Info](#stream-info)
-  - 4.2 [Channel Info](#channel-info)
+  - 4.1 [Channel Info](#channel-info)
 - 5 [DSP ADPCM Info](#dsp-adpcm-info)
   - 5.1 [DSP ADPCM Param](#dsp-adpcm-param)
   - 5.2 [DSP ADPCM Context](#dsp-adpcm-context)
@@ -91,27 +90,6 @@ All Reference Offsets at the beginning of Info Block are Relative to the **Infob
 | 0x18 | 4 | [u32](#u32) | Reserved |
 | 0x18 | 8 | [Reference Table](#reference-table) | Channel Info Reference Table |
 
-### Stream Info
-
-| Offset | Size | Datatype | Description |
-|---|---|---|---|
-| 0x00 | 1 | [u8](#u8) | Encoding |
-| 0x01 | 1 | [u8](#u8) | Loop `1 == true -- 0  == false` |
-| 0x02 | 1 | [u8](#u8) | Num Channels |
-| 0x03 | 1 | [u8](#u8) | Padding |
-| 0x04 | 4 | [u32](#u32) | Sample Rate |
-| 0x04 | 4 | [u32](#u32) | Loop Start |
-| 0x04 | 4 | [u32](#u32) | Loop End |
-| 0x04 | 4 | [u32](#u32) | Sample Blocks |
-| 0x04 | 4 | [u32](#u32) | Sample Block Size |
-| 0x04 | 4 | [u32](#u32) | Sample Block Samples |
-| 0x04 | 4 | [u32](#u32) | Last Sample Block Size |
-| 0x04 | 4 | [u32](#u32) | Last Sample Block Samples |
-| 0x04 | 4 | [u32](#u32) | Last Sample Block Padded Size |
-| 0x04 | 4 | [u32](#u32) | Seek Data Size |
-| 0x04 | 4 | [u32](#u32) | Seek Interval Samples |
-| 0x04 | 4 | [Reference](#reference) | Sample Data Reference |
-
 ### Channel Info
 
 | Offset | Size | Datatype | Description |
@@ -162,17 +140,18 @@ using u16 = unsigned short; // or uint16_t
 using u8 = unsigned char; // or uint8_t
 ```
 
-## Tools / Devices / File SOurces used for research
+## Tools / Devices / File Sources used for research
 
 | Name | Description |
 |---|---|
 | Visual Studio Code | Used for creating ctrff c++ code for bcstm |
 | ImHex | Used to Analyze the Hex Code of the bcstm Files |
 | Citra | Fast way to generate Log files when developing ctrff |
+| LoopingAudioConverter | Used to create some files for testing |
 | ctrff-cli | Tool to generate Debug Output on Desktop OS like seen in BCSTM-Player File inspector |
 | New 3ds XL | Testing on Real Hardware (BCSTM-Player) |
 | Mario Kart 7 (Cartridge) | Used to get Test files |
 | CTGP 7 | Used to get Test files |
 | Super Mario Maker 3ds (Cartridge) | Used to get Test files |
 | Mario and Luigi Bowsers inside story (Cartridge) | Used to get Test files |
-| Donkey Kong Country Returns 3D | Used to get Test files |
+| Donkey Kong Country Returns 3D (Cardridge) | Used to get Test files |

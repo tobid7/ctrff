@@ -162,12 +162,13 @@ using u16 = unsigned short; // or uint16_t
 using u8 = unsigned char; // or uint8_t
 ```
 
-## Tools / Devices / File SOurces used for research
+## Tools / Devices / File Sources used for research
 
 | Name | Description |
 |---|---|
 | Visual Studio Code | Used for creating ctrff c++ code for bcstm |
 | ImHex | Used to Analyze the Hex Code of the bcstm Files |
+| LoopingAudioConverter | Used to create some files for testing |
 | Citra | Fast way to generate Log files when developing ctrff |
 | ctrff-cli | Tool to generate Debug Output on Desktop OS like seen in BCSTM-Player File inspector |
 | New 3ds XL | Testing on Real Hardware (BCSTM-Player) |
@@ -175,4 +176,4 @@ using u8 = unsigned char; // or uint8_t
 | CTGP 7 | Used to get Test files |
 | Super Mario Maker 3ds (Cartridge) | Used to get Test files |
 | Mario and Luigi Bowsers inside story (Cartridge) | Used to get Test files |
-| Donkey Kong Country Returns 3D | Used to get Test files |
+| Donkey Kong Country Returns 3D (Cardridge) | Used to get Test files |
