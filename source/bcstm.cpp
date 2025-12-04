@@ -164,10 +164,10 @@ CTRFF_API void BCSTM::ReadBlock(PD::u32 block, PD::u8* ref) {
     throw std::runtime_error(std::format(
         "BCSTM: Decode block out of range! ({}/{})", block, GetNumBlocks()));
   }
-  pFile.read(
-      reinterpret_cast<char*>(ref),
-      (block == (GetNumBlocks() - 1) ? pInfoBlock.StreamInfo.LastSampleBlockSize
-                                     : GetBlockSize()));
+  pFile.read(reinterpret_cast<char*>(ref),
+             (block == (GetNumBlocks() - 1)
+                  ? pInfoBlock.StreamInfo.LastSampleBlockPaddedSize
+                  : GetBlockSize()));
 }
 
 CTRFF_API void BCSTM::CleanUp() {
