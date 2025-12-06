@@ -2,8 +2,7 @@
 
 #include <ctrff/binutil.hpp>
 #include <ctrff/helper.hpp>
-#include <ctrff/pd_p_api.hpp>
-#include <pd.hpp>
+#include <ctrff/types.hpp>
 
 // Basic Info
 // language_slots: 16
@@ -16,16 +15,16 @@ namespace ctrff {
 // SMDH Size (Note that this needs to be declared here as
 // a sizeof(SMDH) will not return the expected size due to
 // use of Serializable)
-constexpr PD::u32 SMDH_Size = 0x36C0;
+constexpr ctrff::u32 SMDH_Size = 0x36C0;
 struct CTRFF_API SMDH {
   SMDH() {
-    std::fill_n(Magic, PD::ArraySize(Magic), 0);
-    std::fill_n(IconSmall, PD::ArraySize(IconSmall), 0);
-    std::fill_n(IconLarge, PD::ArraySize(IconLarge), 0);
+    std::fill_n(Magic, ctrff::ArraySize(Magic), 0);
+    std::fill_n(IconSmall, ctrff::ArraySize(IconSmall), 0);
+    std::fill_n(IconLarge, ctrff::ArraySize(IconLarge), 0);
   }
   ~SMDH() = default;
   static SMDH Default();
-  PD_SMART_CTOR(SMDH);
+  PD_SHARED(SMDH);
 
   enum Language {
     Language_Japanese,
@@ -97,8 +96,8 @@ struct CTRFF_API SMDH {
   void Write(std::fstream &f) const;
   void Read(std::fstream &f);
 
-  void SetIcon(const std::vector<PD::u8> &buf);
-  std::vector<PD::u8> GetIcon();
+  void SetIcon(const std::vector<ctrff::u8> &buf);
+  std::vector<ctrff::u8> GetIcon();
   void SetShortTitle(const std::string &t, Language l = Language_All);
   void SetLongTitle(const std::string &t, Language l = Language_All);
   void SetAuthor(const std::string &t, Language l = Language_All);
@@ -108,36 +107,36 @@ struct CTRFF_API SMDH {
 
   struct CTRFF_API Title {
     Title() {
-      std::fill_n(ShortTitle, PD::ArraySize(ShortTitle), 0);
-      std::fill_n(LongTitle, PD::ArraySize(LongTitle), 0);
-      std::fill_n(Author, PD::ArraySize(Author), 0);
+      std::fill_n(ShortTitle, ctrff::ArraySize(ShortTitle), 0);
+      std::fill_n(LongTitle, ctrff::ArraySize(LongTitle), 0);
+      std::fill_n(Author, ctrff::ArraySize(Author), 0);
     };
 
-    PD::u16 ShortTitle[0x40];
-    PD::u16 LongTitle[0x80];
-    PD::u16 Author[0x40];
+    ctrff::u16 ShortTitle[0x40];
+    ctrff::u16 LongTitle[0x80];
+    ctrff::u16 Author[0x40];
   };
 
   struct CTRFF_API Settings {
-    Settings() { std::fill_n(Ratings, PD::ArraySize(Ratings), 0); };
-    PD::u8 Ratings[16];
-    PD::u32 RegionLock = 0;
-    PD::u32 MatchmakerID = 0;
-    PD::u64 MatchmakerBitID = 0;
-    PD::u32 Flags = 0;
-    PD::u16 EulaVersion = 0;
-    PD::u16 Reserved = 0;
-    PD::u32 OptimalBannerFrame = 0;
-    PD::u32 StreetpassID = 0;
+    Settings() { std::fill_n(Ratings, ctrff::ArraySize(Ratings), 0); };
+    ctrff::u8 Ratings[16];
+    ctrff::u32 RegionLock = 0;
+    ctrff::u32 MatchmakerID = 0;
+    ctrff::u64 MatchmakerBitID = 0;
+    ctrff::u32 Flags = 0;
+    ctrff::u16 EulaVersion = 0;
+    ctrff::u16 Reserved = 0;
+    ctrff::u32 OptimalBannerFrame = 0;
+    ctrff::u32 StreetpassID = 0;
   };
 
   char Magic[4];
-  PD::u16 Version = 0;
-  PD::u16 Reserved = 0;
+  ctrff::u16 Version = 0;
+  ctrff::u16 Reserved = 0;
   Title Titles[16];
   Settings Settings;
-  PD::u64 Reserved1 = 0;
-  PD::u16 IconSmall[0x240];  // 24x24
-  PD::u16 IconLarge[0x900];  // 48x48
+  ctrff::u64 Reserved1 = 0;
+  ctrff::u16 IconSmall[0x240];  // 24x24
+  ctrff::u16 IconLarge[0x900];  // 48x48
 };
 }  // namespace ctrff

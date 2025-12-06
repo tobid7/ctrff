@@ -1,8 +1,8 @@
 #pragma once
 
 #include <ctrff/binutil.hpp>
-#include <ctrff/pd_p_api.hpp>
-#include <pd.hpp>
+#include <ctrff/types.hpp>
+#include <palladium>
 
 namespace ctrff {
 class CTRFF_API BCWAV {
@@ -13,15 +13,15 @@ class CTRFF_API BCWAV {
   void LoadFile(const std::string& path);
   void CleanUp();
   void ReadGotoBeginning(bool use_loop_beg = false);
-  void ReadBlock(PD::u32 block, PD::u8* ref);
+  void ReadBlock(ctrff::u32 block, ctrff::u8* ref);
 
   /** Internal Data (can be made private with private: but public by default) */
-  enum Endianness : PD::u16 {
+  enum Endianness : ctrff::u16 {
     Big = 0xfffe,     ///< Big Endian
     Little = 0xfeff,  ///< Little Endian
   };
 
-  enum ReferenceTypes : PD::u16 {
+  enum ReferenceTypes : ctrff::u16 {
     Ref_DSP_ADPCM_Info = 0x0300,
     Ref_IMA_ADPCM_Info = 0x0301,
     Ref_SampleData = 0x1f00,
@@ -30,7 +30,7 @@ class CTRFF_API BCWAV {
     Ref_ChannelInfo = 0x7100,
   };
 
-  enum Encoding : PD::u8 {
+  enum Encoding : ctrff::u8 {
     PCM8 = 0,
     PCM16 = 1,
     /** Only supported encoding in BCSTM-Player */
@@ -40,27 +40,27 @@ class CTRFF_API BCWAV {
 
   struct Reference {
     Reference() : TypeID(0), Padding(0), Offset(0) {}
-    PD::u16 TypeID;
-    PD::u16 Padding;
-    PD::u32 Offset; /** null -> uint32_max */
+    ctrff::u16 TypeID;
+    ctrff::u16 Padding;
+    ctrff::u32 Offset; /** null -> uint32_max */
   };
 
   struct ReferenceTable {
     ReferenceTable() : Count(0) {}
-    PD::u32 Count;
+    ctrff::u32 Count;
     std::vector<Reference> Refs;
   };
 
   struct SizedReference {
     SizedReference() : Size(0) {}
     Reference Ref;
-    PD::u32 Size;
+    ctrff::u32 Size;
   };
 
   struct BlockHeader {
     BlockHeader() : Magic(0), Size(0) {}
-    PD::u32 Magic;
-    PD::u32 Size;
+    ctrff::u32 Magic;
+    ctrff::u32 Size;
   };
 
   struct InfoBlock {
@@ -73,13 +73,13 @@ class CTRFF_API BCWAV {
           LoopEndFrame(0),
           Reserved(0) {}
     BlockHeader Header;
-    PD::u8 Encoding;
-    PD::u8 Loop;
-    PD::u16 Padding;
-    PD::u32 SampleRate;
-    PD::u32 LoopStartFrame;
-    PD::u32 LoopEndFrame;
-    PD::u32 Reserved;
+    ctrff::u8 Encoding;
+    ctrff::u8 Loop;
+    ctrff::u16 Padding;
+    ctrff::u32 SampleRate;
+    ctrff::u32 LoopStartFrame;
+    ctrff::u32 LoopEndFrame;
+    ctrff::u32 Reserved;
     ReferenceTable ChannelInfoTab;
     std::vector<Reference> ChannelInfoRefs; /** The refs of the refs ?? */
   };
@@ -91,12 +91,12 @@ class CTRFF_API BCWAV {
       }
     }
     BlockHeader Header;
-    PD::u32 Padding[3];
-    std::vector<PD::u8> Data;
+    ctrff::u32 Padding[3];
+    std::vector<ctrff::u8> Data;
   };
 
   struct DSP_ADPCM_Param {
-    PD::u16 Coefficients[0x10];
+    ctrff::u16 Coefficients[0x10];
   };
   struct DSP_ADPCM_Context {
     DSP_ADPCM_Context()
@@ -104,10 +104,10 @@ class CTRFF_API BCWAV {
           Reserved(0),
           PreviousSample(0),
           SecondPreviousSample(0) {}
-    PD::u8 PredictorScale;
-    PD::u8 Reserved;
-    PD::u16 PreviousSample;
-    PD::u16 SecondPreviousSample;
+    ctrff::u8 PredictorScale;
+    ctrff::u8 Reserved;
+    ctrff::u16 PreviousSample;
+    ctrff::u16 SecondPreviousSample;
   };
 
   struct DSP_ADPCM_Info {
@@ -115,7 +115,7 @@ class CTRFF_API BCWAV {
     DSP_ADPCM_Param Param;
     DSP_ADPCM_Context Context;
     DSP_ADPCM_Context LoopContext;
-    PD::u16 Padding;
+    ctrff::u16 Padding;
   };
 
   struct Header {
@@ -127,13 +127,13 @@ class CTRFF_API BCWAV {
           FileSize(0),
           NumBlocks(0),
           Reserved(0) {}
-    PD::u32 Magic;               /** CWAV */
-    PD::u16 Endianness = Little; /** Default */
-    PD::u16 HeaderSize;          /** Header Size probably */
-    PD::u32 Version;             /** Format Version? */
-    PD::u32 FileSize;            /** File Size */
-    PD::u16 NumBlocks;           /** Number of blocks */
-    PD::u16 Reserved;            /** Reserved */
+    ctrff::u32 Magic;               /** CWAV */
+    ctrff::u16 Endianness = Little; /** Default */
+    ctrff::u16 HeaderSize;          /** Header Size probably */
+    ctrff::u32 Version;             /** Format Version? */
+    ctrff::u32 FileSize;            /** File Size */
+    ctrff::u16 NumBlocks;           /** Number of blocks */
+    ctrff::u16 Reserved;            /** Reserved */
   };
 
   Header pHeader;

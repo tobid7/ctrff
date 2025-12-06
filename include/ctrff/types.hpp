@@ -48,3 +48,26 @@ SOFTWARE.
 #else
 #define CTRFF_API
 #endif
+
+#include <cstddef>
+
+namespace ctrff {
+using u8 = unsigned char;
+using u16 = unsigned short;
+using u32 = unsigned int;
+using u64 = unsigned long long;
+
+/**
+ * Function to get Arraysize for any type using modern c++ to
+ * get the size at compiletime instead of runtime
+ * @note this function only works for Arrays declared as
+ * type arr[size] and not for pointer references.
+ * This function will precalculate the size at compile time
+ * while keeping the code clean to not hardcode arraysizes
+ * into functions like std::fill_n
+ */
+template <typename T, size_t N>
+constexpr size_t ArraySize(T (&)[N]) noexcept {
+  return N;
+}
+}  // namespace ctrff

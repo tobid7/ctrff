@@ -1,7 +1,7 @@
 #pragma once
 
-#include <ctrff/pd_p_api.hpp>
-#include <pd.hpp>
+#include <ctrff/types.hpp>
+#include <palladium>
 
 namespace ctrff {
 class BinFile {

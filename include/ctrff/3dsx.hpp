@@ -1,9 +1,8 @@
 #pragma once
 
 #include <ctrff/helper.hpp>
-#include <ctrff/pd_p_api.hpp>
 #include <ctrff/smdh.hpp>
-#include <pd.hpp>
+#include <ctrff/types.hpp>
 
 namespace ctrff {
 class CTRFF_API _3dsx : public BinFile {
@@ -23,24 +22,24 @@ class CTRFF_API _3dsx : public BinFile {
   void Write(std::fstream& f) const override;
   void Read(std::fstream& f) override;
 
-  PD::u32 Magic;
-  PD::u16 HeaderSize;
-  PD::u16 RelocHeaderSize;
-  PD::u32 FormatVersion;
-  PD::u32 Flags;
+  ctrff::u32 Magic;
+  ctrff::u16 HeaderSize;
+  ctrff::u16 RelocHeaderSize;
+  ctrff::u32 FormatVersion;
+  ctrff::u32 Flags;
   // Sizes of the code, rodata and data segments +
   // size of the BSS section (uninitialized latter half of the data segment)
-  PD::u32 CodeSegSize;
-  PD::u32 RodataSegSize;
-  PD::u32 DataSegSize;
-  PD::u32 BssSize;
+  ctrff::u32 CodeSegSize;
+  ctrff::u32 RodataSegSize;
+  ctrff::u32 DataSegSize;
+  ctrff::u32 BssSize;
   /// Extended Header ///
   // smdh offset
-  PD::u32 SMDHOff;
+  ctrff::u32 SMDHOff;
   // smdh size
-  PD::u32 SMDHSize;
+  ctrff::u32 SMDHSize;
   // fs offset
-  PD::u32 FsOff;
+  ctrff::u32 FsOff;
   SMDH Meta;
 };
 /** Probably only germen people will understand */

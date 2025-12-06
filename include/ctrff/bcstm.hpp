@@ -1,8 +1,8 @@
 #pragma once
 
 #include <ctrff/binutil.hpp>
-#include <ctrff/pd_p_api.hpp>
-#include <pd.hpp>
+#include <ctrff/types.hpp>
+#include <palladium>
 
 namespace ctrff {
 class CTRFF_API BCSTM {
@@ -13,38 +13,44 @@ class CTRFF_API BCSTM {
   void LoadFile(const std::string& path);
   void CleanUp();
   void ReadGotoBeginning(bool use_loop_beg = false);
-  void ReadBlock(PD::u32 block, PD::u8* ref);
+  void ReadBlock(ctrff::u32 block, ctrff::u8* ref);
 
   /** Some useful Getters */
-  PD::u8 GetNumChannels() const { return pInfoBlock.StreamInfo.ChannelCount; }
-  PD::u32 GetSampleRate() const { return pInfoBlock.StreamInfo.SampleRate; }
-  PD::u32 GetBlockSize() const { return pInfoBlock.StreamInfo.SampleBlockSize; }
-  PD::u32 GetNumBlocks() const { return pInfoBlock.StreamInfo.SampleBlockNum; }
-  PD::u32 GetBlockSamples() const {
+  ctrff::u8 GetNumChannels() const {
+    return pInfoBlock.StreamInfo.ChannelCount;
+  }
+  ctrff::u32 GetSampleRate() const { return pInfoBlock.StreamInfo.SampleRate; }
+  ctrff::u32 GetBlockSize() const {
+    return pInfoBlock.StreamInfo.SampleBlockSize;
+  }
+  ctrff::u32 GetNumBlocks() const {
+    return pInfoBlock.StreamInfo.SampleBlockNum;
+  }
+  ctrff::u32 GetBlockSamples() const {
     return pInfoBlock.StreamInfo.SampleBlockSampleNum;
   }
-  PD::u32 GetLastBlockSamples() const {
+  ctrff::u32 GetLastBlockSamples() const {
     return pInfoBlock.StreamInfo.LastSampleBlockSampleNum;
   }
   bool IsLooping() const { return pInfoBlock.StreamInfo.Loop; }
-  PD::u32 GetLoopStart() const {
+  ctrff::u32 GetLoopStart() const {
     return pInfoBlock.StreamInfo.LoopStartFrame / GetBlockSamples();
   }
-  PD::u32 GetLoopEnd() const {
+  ctrff::u32 GetLoopEnd() const {
     /** Get temp references for better readability */
-    const PD::u32& loop_end = pInfoBlock.StreamInfo.LoopEndFrame;
-    const PD::u32& block_samples = GetBlockSamples();
+    const ctrff::u32& loop_end = pInfoBlock.StreamInfo.LoopEndFrame;
+    const ctrff::u32& block_samples = GetBlockSamples();
     return (loop_end % block_samples ? GetNumBlocks()
                                      : loop_end / block_samples);
   }
 
   /** Internal Data (can be made private with private: but public by default) */
-  enum Endianness : PD::u16 {
+  enum Endianness : ctrff::u16 {
     Big = 0xfffe,     ///< Big Endian
     Little = 0xfeff,  ///< Little Endian
   };
 
-  enum ReferenceTypes : PD::u16 {
+  enum ReferenceTypes : ctrff::u16 {
     Ref_ByteTable = 0x0100,
     Ref_ReferenceTable = 0x0101,
     Ref_DSP_ADPCM_Info = 0x0300,
@@ -58,7 +64,7 @@ class CTRFF_API BCSTM {
     Ref_ChannelInfo = 0x4102,
   };
 
-  enum Encoding : PD::u8 {
+  enum Encoding : ctrff::u8 {
     PCM8 = 0,
     PCM16 = 1,
     /** Only supported encoding in BCSTM-Player */
@@ -68,50 +74,50 @@ class CTRFF_API BCSTM {
 
   struct Reference {
     Reference() : TypeID(0), Padding(0), Offset(0) {}
-    Reference(PD::u16 t, PD::u16 p, PD::u32 o)
+    Reference(ctrff::u16 t, ctrff::u16 p, ctrff::u32 o)
         : TypeID(t), Padding(p), Offset(o) {}
-    PD::u16 TypeID;
-    PD::u16 Padding;
-    PD::u32 Offset; /** null -> uint32_max */
+    ctrff::u16 TypeID;
+    ctrff::u16 Padding;
+    ctrff::u32 Offset; /** null -> uint32_max */
   };
 
   struct ReferenceTable {
     ReferenceTable() : Count(0) {}
-    PD::u32 Count;
+    ctrff::u32 Count;
     std::vector<Reference> Refs;
   };
 
   struct SizedReference {
     SizedReference() : Size(0) {}
     Reference Ref;
-    PD::u32 Size;
+    ctrff::u32 Size;
   };
 
   struct StreamInfo {
     StreamInfo();
-    PD::u8 Encoding;
-    PD::u8 Loop;
-    PD::u8 ChannelCount;
-    PD::u8 Padding;
-    PD::u32 SampleRate;
-    PD::u32 LoopStartFrame;
-    PD::u32 LoopEndFrame;
-    PD::u32 SampleBlockNum;
-    PD::u32 SampleBlockSize;
-    PD::u32 SampleBlockSampleNum;
-    PD::u32 LastSampleBlockSize;
-    PD::u32 LastSampleBlockSampleNum;
-    PD::u32 LastSampleBlockPaddedSize;
-    PD::u32 SeekDataSize;
-    PD::u32 SeekIntervalSampleNum;
+    ctrff::u8 Encoding;
+    ctrff::u8 Loop;
+    ctrff::u8 ChannelCount;
+    ctrff::u8 Padding;
+    ctrff::u32 SampleRate;
+    ctrff::u32 LoopStartFrame;
+    ctrff::u32 LoopEndFrame;
+    ctrff::u32 SampleBlockNum;
+    ctrff::u32 SampleBlockSize;
+    ctrff::u32 SampleBlockSampleNum;
+    ctrff::u32 LastSampleBlockSize;
+    ctrff::u32 LastSampleBlockSampleNum;
+    ctrff::u32 LastSampleBlockPaddedSize;
+    ctrff::u32 SeekDataSize;
+    ctrff::u32 SeekIntervalSampleNum;
     Reference SampleDataRef;
   };
 
   struct BlockHeader {
     BlockHeader() : Magic(0), Size(0) {}
-    BlockHeader(PD::u32 m, PD::u32 s) : Magic(m), Size(s) {}
-    PD::u32 Magic;
-    PD::u32 Size;
+    BlockHeader(ctrff::u32 m, ctrff::u32 s) : Magic(m), Size(s) {}
+    ctrff::u32 Magic;
+    ctrff::u32 Size;
   };
 
   struct InfoBlock {
@@ -130,13 +136,13 @@ class CTRFF_API BCSTM {
   struct SD_Block {
     SD_Block() {}
     BlockHeader Header;
-    std::vector<PD::u8> Data;
+    std::vector<ctrff::u8> Data;
   };
 
   struct DSP_ADPCM_Param {
     // Lets keep this not clean here :/
     DSP_ADPCM_Param() {}
-    PD::u16 Coefficients[0x10];
+    ctrff::u16 Coefficients[0x10];
   };
 
   struct DSP_ADPCM_Context {
@@ -145,10 +151,10 @@ class CTRFF_API BCSTM {
           Reserved(0),
           PreviousSample(0),
           SecondPreviousSample(0) {}
-    PD::u8 PredictorScale;
-    PD::u8 Reserved;
-    PD::u16 PreviousSample;
-    PD::u16 SecondPreviousSample;
+    ctrff::u8 PredictorScale;
+    ctrff::u8 Reserved;
+    ctrff::u16 PreviousSample;
+    ctrff::u16 SecondPreviousSample;
   };
 
   struct DSP_ADPCM_Info {
@@ -156,20 +162,20 @@ class CTRFF_API BCSTM {
     DSP_ADPCM_Param Param;
     DSP_ADPCM_Context Context;
     DSP_ADPCM_Context LoopContext;
-    PD::u16 Padding;
+    ctrff::u16 Padding;
   };
 
   struct ByteTable {
-    ByteTable(PD::u32 size = 0) : Size(size) {}
-    PD::u32 Size;
-    std::vector<PD::u8> Table;
+    ByteTable(ctrff::u32 size = 0) : Size(size) {}
+    ctrff::u32 Size;
+    std::vector<ctrff::u8> Table;
   };
 
   struct TrackInfo {
     TrackInfo() : Volume(0), Pan(0), Padding(0) {}
-    PD::u8 Volume;
-    PD::u8 Pan;
-    PD::u16 Padding;
+    ctrff::u8 Volume;
+    ctrff::u8 Pan;
+    ctrff::u16 Padding;
     Reference ChennelIndexTabRef;
     ByteTable ChannelIndexTab;
   };
@@ -184,13 +190,13 @@ class CTRFF_API BCSTM {
           FileSize(0),
           NumBlocks(0),
           Reserved(0) {}
-    PD::u32 Magic;               /** CSTM */
-    PD::u16 Endianness = Little; /** Default */
-    PD::u16 HeaderSize;          /** Header Size probably */
-    PD::u32 Version;             /** Format Version? */
-    PD::u32 FileSize;            /** File Size */
-    PD::u16 NumBlocks;           /** Number of blocks */
-    PD::u16 Reserved;            /** Reserved */
+    ctrff::u32 Magic;               /** CSTM */
+    ctrff::u16 Endianness = Little; /** Default */
+    ctrff::u16 HeaderSize;          /** Header Size probably */
+    ctrff::u32 Version;             /** Format Version? */
+    ctrff::u32 FileSize;            /** File Size */
+    ctrff::u16 NumBlocks;           /** Number of blocks */
+    ctrff::u16 Reserved;            /** Reserved */
   };
 
   Header pHeader;

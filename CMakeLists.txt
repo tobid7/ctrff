@@ -19,7 +19,6 @@ if(${CTRFF_3DS})
         endif()
     endif()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wno-psabi -O3")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS} -fno-rtti")
 endif()
 
 add_library(ctrff STATIC
@@ -32,7 +31,6 @@ add_library(ctrff STATIC
     source/3dsx.cpp
 )
 target_include_directories(ctrff PUBLIC include)
-target_include_directories(ctrff PRIVATE vendor/palladium/include)
 
 if(${CTRFF_DESKTOP})
     add_executable(ctrff-cli tool/main.cpp)
