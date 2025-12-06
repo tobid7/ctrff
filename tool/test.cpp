@@ -16,20 +16,20 @@ void Result(const std::string& name, T a, T b) {
 
 void BinTest(bool be) {
   std::fstream s("test.bin", std::ios::out | std::ios::binary);
-  PD::u8 t8 = 0xdf;
-  PD::u16 t16 = 0x4564;
-  PD::u32 t32 = 0x58464743;
-  PD::u64 t64 = 1234567890123456789ULL;
+  ctrff::u8 t8 = 0xdf;
+  ctrff::u16 t16 = 0x4564;
+  ctrff::u32 t32 = 0x58464743;
+  ctrff::u64 t64 = 1234567890123456789ULL;
   ctrff::BinUtil u(s, be);
   u.Write(t8);
   u.Write(t16);
   u.Write(t32);
   u.Write(t64);
   s.close();
-  PD::u8 r8 = 0;
-  PD::u16 r16 = 0;
-  PD::u32 r32 = 0;
-  PD::u64 r64 = 0;
+  ctrff::u8 r8 = 0;
+  ctrff::u16 r16 = 0;
+  ctrff::u32 r32 = 0;
+  ctrff::u64 r64 = 0;
   s.open("test.bin", std::ios::in | std::ios::binary);
   u.Read(r8);
   u.Read(r16);

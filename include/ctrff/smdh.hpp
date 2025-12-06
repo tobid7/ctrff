@@ -24,7 +24,6 @@ struct CTRFF_API SMDH {
   }
   ~SMDH() = default;
   static SMDH Default();
-  PD_SHARED(SMDH);
 
   enum Language {
     Language_Japanese,

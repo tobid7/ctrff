@@ -121,7 +121,7 @@ void MakeSMDH(const cf7::command::ArgumentList &data) {
   smdh.SetAuthor(a);
   std::vector<unsigned char> img;
   int w, h, c;
-  PD::u8 *buf = stbi_load(i.c_str(), &w, &h, &c, 4);
+  ctrff::u8 *buf = stbi_load(i.c_str(), &w, &h, &c, 4);
   if (buf == nullptr) {
     cf7::PrintFancy({
         std::make_pair("Error", cf7::col(190, 0, 0)),

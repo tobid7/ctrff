@@ -1,7 +1,7 @@
 #include <ctrff/bcstm.hpp>
 
 /** Using this a single time so inline it */
-inline PD::u32 Swap32(PD::u32 in) {
+inline ctrff::u32 Swap32(ctrff::u32 in) {
   return (in >> 24) | ((in >> 8) & 0x0000FF00) | ((in << 8) & 0x00FF0000) |
          (in << 24);
 }
@@ -28,7 +28,7 @@ CTRFF_API void BCSTM::LoadFile(const std::string& path) {
   pReader.Read(pHeader.FileSize);
   pReader.Read(pHeader.NumBlocks);
   pReader.Read(pHeader.Reserved);
-  for (PD::u16 i = 0; i < pHeader.NumBlocks; i++) {
+  for (ctrff::u16 i = 0; i < pHeader.NumBlocks; i++) {
     SizedReference ref;
     ReadSizedReference(ref);
     if (ref.Ref.TypeID == Ref_InfoBlock) {
@@ -119,8 +119,8 @@ CTRFF_API void BCSTM::ReadSeekBlock(SD_Block& block) {
   }
 
   pSeekBlock.Data.reserve(pSeekBlock.Header.Size + 1);
-  for (PD::u32 i = 0; i < pSeekBlock.Header.Size; i++) {
-    PD::u8 v;
+  for (ctrff::u32 i = 0; i < pSeekBlock.Header.Size; i++) {
+    ctrff::u8 v;
     pReader.Read(v);
     pSeekBlock.Data.push_back(v);
   }
@@ -129,7 +129,7 @@ CTRFF_API void BCSTM::ReadSeekBlock(SD_Block& block) {
 CTRFF_API void BCSTM::ReadReferenceTab(ReferenceTable& tab) {
   pReader.Read(tab.Count);
   tab.Refs.reserve(tab.Count + 1);
-  for (PD::u32 i = 0; i < tab.Count; i++) {
+  for (ctrff::u32 i = 0; i < tab.Count; i++) {
     Reference r;
     pReader.Read(r.TypeID);
     pReader.Read(r.Padding);
@@ -155,7 +155,7 @@ CTRFF_API void BCSTM::ReadGotoBeginning(bool use_loop_beg) {
   }
 }
 
-CTRFF_API void BCSTM::ReadBlock(PD::u32 block, PD::u8* ref) {
+CTRFF_API void BCSTM::ReadBlock(ctrff::u32 block, ctrff::u8* ref) {
   if (!ref) {
     throw std::runtime_error("BCSTM: pointer ref is nullptr!");
   }

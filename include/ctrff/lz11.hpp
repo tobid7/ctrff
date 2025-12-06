@@ -1,7 +1,6 @@
 #pragma once
 
 #include <ctrff/types.hpp>
-#include <palladium>
 
 namespace ctrff {
 namespace LZ11 {

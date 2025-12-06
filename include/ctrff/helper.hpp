@@ -1,7 +1,6 @@
 #pragma once
 
 #include <ctrff/types.hpp>
-#include <palladium>
 
 namespace ctrff {
 CTRFF_API void String2U16(ctrff::u16 *res, const std::string &src, size_t max);

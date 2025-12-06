@@ -39,14 +39,14 @@ CTRFF_API void ctrff::SMDH::Read(std::fstream &f) {
   f.read(reinterpret_cast<char *>(&IconLarge), sizeof(IconLarge));
 }
 
-CTRFF_API void ctrff::SMDH::SetIcon(const std::vector<PD::u8> &buf) {
+CTRFF_API void ctrff::SMDH::SetIcon(const std::vector<ctrff::u8> &buf) {
   RGBA2RGB565(IconLarge, buf, 48, 48);
   auto small_icon = DownscaleImage(buf, 48, 48, 2);
   RGBA2RGB565(IconSmall, small_icon, 24, 24);
 }
 
-CTRFF_API std::vector<PD::u8> ctrff::SMDH::GetIcon() {
-  std::vector<PD::u8> res(48 * 48 * 4);
+CTRFF_API std::vector<ctrff::u8> ctrff::SMDH::GetIcon() {
+  std::vector<ctrff::u8> res(48 * 48 * 4);
   ctrff::RGB565toRGBA(res, IconLarge, 48, 48);
   return res;
 }

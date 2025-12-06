@@ -2,7 +2,6 @@
 
 #include <ctrff/binutil.hpp>
 #include <ctrff/types.hpp>
-#include <palladium>
 
 namespace ctrff {
 class CTRFF_API BCSTM {
