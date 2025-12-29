@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iomanip>
 #include <map>
+#include <palladium>
 #include <string>
 #include <utility>
 
@@ -442,6 +443,73 @@ void LZ11Compress(const cf7::command::ArgumentList &data) {
   out.close();
 }
 
+void BCLIMMaker(const cf7::command::ArgumentList &data) {
+  std::string i = cf7::command::GetArg(data, "input");
+  std::string o = cf7::command::GetArg(data, "output");
+  std::string f = cf7::command::GetArg(data, "format");
+  if (i.empty() || o.empty()) {
+    std::cout << "[ctrff] BCLIM: Error, no input or output" << std::endl;
+    return;
+  }
+  if (f.empty() || (f.compare("rgba32") != 0 && f.compare("a8") != 0 &&
+                    f.compare("rgb565") != 0)) {
+    f = "a8";
+  }
+  int w = 0, h = 0, c = 0;
+  auto ret = stbi_load(i.c_str(), &w, &h, &c, 4);
+  if (!ret) {
+    std::cout << "[ctrff] BCLIM: Failed to load image " + i << std::endl;
+    return;
+  }
+  if (!PD::BitUtil::IsSingleBit(w) || !PD::BitUtil::IsSingleBit(h)) {
+    std::cout << "[ctrff] BCLIM: Image with and height must be a power of 8!";
+    return;
+  }
+  size_t size = w * h;
+  if (f == "rgba32") {
+    size *= 4;
+  } else if (f == "rgb565") {
+    size *= 2;
+  }
+  std::vector<ctrff::u8> res(size);
+  if (f == "rgba32" || f == "a8") {
+    for (int x = 0; x < w; x++) {
+      for (int y = 0; y < h; y++) {
+        int src = (y * w + x) * 4;
+        int dst = ctrff::TileIndex(x, y, w);
+        if (f == "rgba32") {
+          dst *= 4;
+          res[dst + 3] = ret[src + 0];
+          res[dst + 2] = ret[src + 1];
+          res[dst + 1] = ret[src + 2];
+          res[dst + 0] = ret[src + 3];
+        } else {
+          res[dst] = ret[src + 3];
+        }
+      }
+    }
+  } else if (f == "rgb565") {
+    std::vector<ctrff::u16> res16(w * h);
+    ctrff::RGBA2RGB565(res16.data(),
+                       std::vector<ctrff::u8>(ret, ret + (w * h * 4)), w, h);
+    for (int i = 0; i < res16.size(); i++) {
+      int pos = i * 2;
+      res[pos] = (ctrff::u8)(res16[i] & 0xff);
+      res[pos + 1] = (ctrff::u8)((res16[i] >> 8) & 0xff);
+    }
+  }
+  ctrff::BCLIM file;
+  ctrff::BCLIM::Format fmt = ctrff::BCLIM::A8;
+  if (f == "rgba32") {
+    fmt = ctrff::BCLIM::RGBA8888;
+  } else if (f == "rgb565") {
+    fmt = ctrff::BCLIM::RGB565;
+  }
+  file.CreateByImage(res, w, h, fmt);
+  file.Save(o);
+  std::cout << "File " + o + " created" << std::endl;
+}
+
 int main(int argc, char *argv[]) {
   cf7::fancy_print = false;
   cf7::colors_supported = false;
@@ -497,6 +565,14 @@ int main(int argc, char *argv[]) {
       cf7::command("hex", "Show Hex view of a File")
           .AddSubEntry(cf7::command::sub("i", "input", "Input File path", true))
           .SetFunction(Hex));
+  mgr.AddCommand(
+      cf7::command("makebclim", "Create CTR Layout Image")
+          .AddSubEntry(cf7::command::sub("i", "input", "Input png|bmp", true))
+          .AddSubEntry(cf7::command::sub("o", "output",
+                                         "Output path of .bclim file", true))
+          .AddSubEntry(cf7::command::sub("f", "format",
+                                         "Image format rgba32|rgb565|a8", true))
+          .SetFunction(BCLIMMaker));
   mgr.Execute();
   return 0;
 }

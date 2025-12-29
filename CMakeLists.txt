@@ -22,13 +22,14 @@ if(${CTRFF_3DS})
 endif()
 
 add_library(ctrff STATIC
+    source/3dsx.cpp
+    source/bclim.cpp
+    source/bcstm.cpp
+    source/bcwav.cpp
+    source/binutil.cpp
     source/helper.cpp
     source/lz11.cpp
     source/smdh.cpp
-    source/binutil.cpp
-    source/bcstm.cpp
-    source/bcwav.cpp
-    source/3dsx.cpp
 )
 target_include_directories(ctrff PUBLIC include)
 

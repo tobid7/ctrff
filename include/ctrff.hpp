@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ctrff/3dsx.hpp>
+#include <ctrff/bclim.hpp>
 #include <ctrff/bcstm.hpp>
 #include <ctrff/bcwav.hpp>
 #include <ctrff/binutil.hpp>

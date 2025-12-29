@@ -19,7 +19,8 @@ CTRFF_API ctrff::u16 MakePixel565(const ctrff::u8 &r, const ctrff::u8 &g,
   return res;
 }
 
-CTRFF_API ctrff::u32 TileIndex(const int &x, const int &y, const int &w) {
+CTRFF_API ctrff::u32 ctrff::TileIndex(const int &x, const int &y,
+                                      const int &w) {
   return (((y >> 3) * (w >> 3) + (x >> 3)) << 6) +
          ((x & 1) | ((y & 1) << 1) | ((x & 2) << 1) | ((y & 2) << 2) |
           ((x & 4) << 2) | ((y & 4) << 3));

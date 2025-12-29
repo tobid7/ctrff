@@ -37,7 +37,7 @@ Not all Planned formates are listed here yet
 | 3dsx | Basic Loading and Viewing of Meta Data Smdh | |
 | bcstm | Loading of almost every Data | Fully done and playable by BCSTM-Player |
 | bcwav | Basic Loading (not tested yet) | Not finished yet |
-| bclim | Nothing done yet (Started creating header) | |
+| bclim | Creating A8,RGBA32,RGB565 done | WIP |
 | lz11 | Encoder done, Decoder missing | WIP |
 | romfs | Nothing Done yet (Started creating header) | |
 | smdh | Almost done | missing safetey checks |
