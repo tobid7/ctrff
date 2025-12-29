@@ -443,8 +443,8 @@ void LZ11Compress(const cf7::command::ArgumentList &data) {
 }
 
 int main(int argc, char *argv[]) {
-  cf7::fancy_print = true;
-  cf7::colors_supported = true;
+  cf7::fancy_print = false;
+  cf7::colors_supported = false;
   cf7::arg_mgr mgr(argc, argv);
   mgr.SetAppInfo("ctrff", "1.0.0");
   auto makesmdh_cmd = cf7::command("makesmdh", "Create a SMDH File");
