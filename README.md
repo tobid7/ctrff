@@ -38,7 +38,7 @@ Not all Planned formates are listed here yet
 | bcstm | Loading of almost every Data | Fully done and playable by BCSTM-Player |
 | bcwav | Basic Loading (not tested yet) | Not finished yet |
 | bclim | Nothing done yet (Started creating header) | |
-| lz11 | Encoder done, Decoder missing | Files are bit diffrent to the ones bannertool generates (don't know why) |
+| lz11 | Encoder done, Decoder missing | WIP |
 | romfs | Nothing Done yet (Started creating header) | |
 | smdh | Almost done | missing safetey checks |
 | cbmd | Nothing done yet | |

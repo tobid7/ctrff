@@ -33,9 +33,10 @@ add_library(ctrff STATIC
 target_include_directories(ctrff PUBLIC include)
 
 if(${CTRFF_DESKTOP})
+    add_subdirectory(vendor/palladium)
     add_executable(ctrff-cli tool/main.cpp)
     target_include_directories(ctrff-cli PUBLIC include vendor/stb vendor/cli-fancy/include)
-    target_link_libraries(ctrff-cli PUBLIC ctrff)
+    target_link_libraries(ctrff-cli PUBLIC ctrff palladium)
     add_executable(test tool/test.cpp)
     target_include_directories(test PUBLIC include vendor/stb vendor/cli-fancy/include)
     target_link_libraries(test PUBLIC ctrff)

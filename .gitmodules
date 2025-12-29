@@ -1,3 +1,6 @@
 [submodule "vendor/cli-fancy"]
 	path = vendor/cli-fancy
 	url = https://dev.npid7.de/tobid7/cli-fancy
+[submodule "vendor/palladium"]
+	path = vendor/palladium
+	url = https://github.com/tobid7/palladium
