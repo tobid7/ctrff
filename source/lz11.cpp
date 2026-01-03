@@ -37,7 +37,7 @@ ctrff::u32 GetOccurenceLength(const ctrff::u8* new_ptr, u32 new_len,
 
 CTRFF_API std::vector<ctrff::u8> Compress(const std::vector<ctrff::u8>& in) {
   if (in.size() > 0xFFFFFF) {
-    std::cout << "ERROR: LZ11 input is too large!" << std::endl;
+    throw std::runtime_error("[ctrff] LZ11: Input is tool large to compress");
     return std::vector<ctrff::u8>();
   }
   std::stringstream s;
@@ -120,6 +120,56 @@ CTRFF_API std::vector<ctrff::u8> Compress(const std::vector<ctrff::u8>& in) {
 
   std::string tmp = s.str();
   return std::vector<u8>(tmp.begin(), tmp.end());
+}
+
+// Baed on
+// https://github.com/Gericom/EveryFileExplorer/blob/master/CommonCompressors/LZ11.cs
+// Needs some fixes cause this code looks very unsafe to me tbh
+CTRFF_API std::vector<ctrff::u8> Decompress(const std::vector<ctrff::u8>& in) {
+  if (!in.size()) {
+    throw std::runtime_error("[ctrff] LZ11: Cannot decompress empty buffer!");
+  }
+  if (in[0] != 0x11) {
+    throw std::runtime_error("[ctrff] LZ11: Not a lz11 file!");
+  }
+  u32 len = in[1] | (in[2] << 8) | (in[3] << 16);
+  std::vector<u8> ret(len, 0x0);
+  int off = 4;
+  int dst_off = 0;
+  while (true) {
+    u8 header = in[off++];
+    for (int i = 0; i < 8; i++) {
+      if ((header & 0x80) == 0) {
+        ret[dst_off++] = in[off++];
+      } else {
+        u8 a = in[off++];
+        int off2;
+        int length;
+        if ((a >> 4) == 0) {
+          u8 b = in[off++];
+          u8 c = in[off++];
+          length = (((a & 0xF) << 4) | (b >> 4)) + 0x11;
+          off2 = (((b & 0xF) << 8) | c) + 1;
+        } else if ((a >> 4) == 1) {
+          u8 b = in[off++];
+          u8 c = in[off++];
+          u8 d = in[off++];
+          length = (((a & 0xF) << 12) | (b << 4) | (c >> 4)) + 0x111;
+          off2 = (((c & 0xF) << 8) | d) + 1;
+        } else {
+          u8 b = in[off++];
+          off2 = (((a & 0xF) << 8) | b) + 1;
+          length = (a >> 4) + 1;
+        }
+        for (int j = 0; j < length; j++) {
+          ret[dst_off] = ret[dst_off - off2];
+          dst_off++;
+        }
+      }
+      if (dst_off >= len) return ret;
+      header <<= 1;
+    }
+  }
 }
 }  // namespace LZ11
 }  // namespace ctrff

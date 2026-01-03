@@ -18,22 +18,23 @@ CTRFF_API void BCLIM::Write(std::fstream& f) const {
 }
 
 CTRFF_API void BCLIM::Read(std::fstream& f) {
-  f.seekg(std::ios::end);
+  f.seekg(0, std::ios::end);
   size_t size = f.tellg();
   if (size < (sizeof(Header) + sizeof(ImagHeader))) {
     throw std::runtime_error("Invalid File!");
   }
   f.seekg(size - sizeof(Header) - sizeof(ImagHeader));
-  Header h;
-  ImagHeader imag;
-  f.read(reinterpret_cast<char*>(&h), sizeof(h));
-  f.read(reinterpret_cast<char*>(&imag), sizeof(imag));
-  if (h.Magic != 0x4d494c43) {
+  f.read(reinterpret_cast<char*>(&pCurrent), sizeof(pCurrent));
+  f.read(reinterpret_cast<char*>(&pImag), sizeof(pImag));
+  if (pCurrent.Magic != 0x4d494c43) {
     throw std::runtime_error("[ctrff] BCLIM: Not a bclim file!");
   }
-  if (imag.Magic != 0x67616d69) {
+  if (pImag.Magic != 0x67616d69) {
     throw std::runtime_error("[ctrff] BCLIM: Invalid Data");
   }
+  f.seekg(0, std::ios::beg);
+  pBuffer.resize(pImag.ImageSize);
+  f.read(reinterpret_cast<char*>(pBuffer.data()), pBuffer.size());
 }
 
 CTRFF_API void BCLIM::CreateByImage(const std::vector<u8>& data, int w, int h,

@@ -22,7 +22,7 @@ class CTRFF_API _3dsx : public BinFile {
   void Write(std::fstream& f) const override;
   void Read(std::fstream& f) override;
 
-  ctrff::u32 Magic;
+  ctrff::u32 Magic;  // 0x58534433 "3DSX"
   ctrff::u16 HeaderSize;
   ctrff::u16 RelocHeaderSize;
   ctrff::u32 FormatVersion;

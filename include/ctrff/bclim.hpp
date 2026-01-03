@@ -81,6 +81,11 @@ class CTRFF_API BCLIM : public BinFile {
 
   void CreateByImage(const std::vector<u8>& data, int w, int h, Format fmt);
 
+  Format GetFmt() const { return (Format)pImag.Format; }
+  std::vector<u8> GetImage() { return pBuffer; }
+  int GetWidth() const { return pImag.Width; }
+  int GetHeight() const { return pImag.Height; }
+
   /** Write not supported btw */
   void Write(std::fstream& f) const override;
   void Read(std::fstream& f) override;
