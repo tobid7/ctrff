@@ -10,7 +10,6 @@
 #include <utility>
 
 /** Import palladium stb image */
-#define STB_IMAGE_IMPLEMENTATION
 #include <pd/external/stb_image.h>
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
@@ -432,7 +431,12 @@ void LZ11Compress(const cf7::command::ArgumentList &data) {
       std::make_pair(i, cf7::col(255, 210, 0)),
       std::make_pair(FormatBytes(buf.size()), cf7::col(255, 255, 0)),
   });
-  auto res = ctrff::LZ11::Compress(buf);
+  std::vector<ctrff::u8> res;
+  if (buf[0] == 0x11) {
+    res = ctrff::LZ11::Decompress(buf);
+  } else {
+    res = ctrff::LZ11::Compress(buf);
+  }
   cf7::PrintFancy({
       std::make_pair("Output", cf7::col(255, 165, 0)),
       std::make_pair(o, cf7::col(255, 210, 0)),
@@ -451,61 +455,41 @@ void BCLIMMaker(const cf7::command::ArgumentList &data) {
     std::cout << "[ctrff] BCLIM: Error, no input or output" << std::endl;
     return;
   }
-  if (f.empty() || (f.compare("rgba32") != 0 && f.compare("a8") != 0 &&
-                    f.compare("rgb565") != 0)) {
-    f = "a8";
-  }
-  int w = 0, h = 0, c = 0;
-  auto ret = stbi_load(i.c_str(), &w, &h, &c, 4);
-  if (!ret) {
+  PD::Image::Ref img = PD::Image::New();
+  img->Load(i);
+  if (img->GetBuffer().empty()) {
     std::cout << "[ctrff] BCLIM: Failed to load image " + i << std::endl;
     return;
   }
-  if (!PD::BitUtil::IsSingleBit(w) || !PD::BitUtil::IsSingleBit(h)) {
+  if (!PD::BitUtil::IsSingleBit(img->Width()) ||
+      !PD::BitUtil::IsSingleBit(img->Height())) {
     std::cout << "[ctrff] BCLIM: Image with and height must be a power of 8!";
     return;
   }
-  size_t size = w * h;
-  if (f == "rgba32") {
-    size *= 4;
+  img->Convert(img, img->RGBA);
+  std::vector<ctrff::u8> res;
+  ctrff::Pica::Color fmt = ctrff::Pica::A8;
+  if (f == "a4") {
+    fmt = ctrff::Pica::A4;
+  } else if (f == "l4") {
+    fmt = ctrff::Pica::L4;
+  } else if (f == "a8") {
+    fmt = ctrff::Pica::L8;
+  } else if (f == "l8") {
+    fmt = ctrff::Pica::L8;
   } else if (f == "rgb565") {
-    size *= 2;
+    fmt = ctrff::Pica::RGB565;
+  } else if (f == "rgb888") {
+    fmt = ctrff::Pica::RGB888;
+  } else if (f == "rgba8888") {
+    fmt = ctrff::Pica::RGBA8888;
   }
-  std::vector<ctrff::u8> res(size);
-  if (f == "rgba32" || f == "a8") {
-    for (int x = 0; x < w; x++) {
-      for (int y = 0; y < h; y++) {
-        int src = (y * w + x) * 4;
-        int dst = ctrff::TileIndex(x, y, w);
-        if (f == "rgba32") {
-          dst *= 4;
-          res[dst + 3] = ret[src + 0];
-          res[dst + 2] = ret[src + 1];
-          res[dst + 1] = ret[src + 2];
-          res[dst + 0] = ret[src + 3];
-        } else {
-          res[dst] = ret[src + 3];
-        }
-      }
-    }
-  } else if (f == "rgb565") {
-    std::vector<ctrff::u16> res16(w * h);
-    ctrff::RGBA2RGB565(res16.data(),
-                       std::vector<ctrff::u8>(ret, ret + (w * h * 4)), w, h);
-    for (int i = 0; i < res16.size(); i++) {
-      int pos = i * 2;
-      res[pos] = (ctrff::u8)(res16[i] & 0xff);
-      res[pos + 1] = (ctrff::u8)((res16[i] >> 8) & 0xff);
-    }
-  }
+  ctrff::Pica::EncodeImage(res, img->GetBuffer(), img->Width(), img->Height(),
+                           fmt);
+
   ctrff::BCLIM file;
-  ctrff::BCLIM::Format fmt = ctrff::BCLIM::A8;
-  if (f == "rgba32") {
-    fmt = ctrff::BCLIM::RGBA8888;
-  } else if (f == "rgb565") {
-    fmt = ctrff::BCLIM::RGB565;
-  }
-  file.CreateByImage(res, w, h, fmt);
+  ctrff::BCLIM::Format _fmt = (ctrff::BCLIM::Format)fmt;
+  file.CreateByImage(res, img->Width(), img->Height(), _fmt);
   file.Save(o);
   std::cout << "File " + o + " created" << std::endl;
 }
@@ -556,7 +540,7 @@ int main(int argc, char *argv[]) {
                                                     "Output icon path!", false))
                      .SetFunction(Read3DSX));
   mgr.AddCommand(
-      cf7::command("lz11", "Creates a LZ11 Compressed File")
+      cf7::command("lz11", "Compress/Decompress a file with LZ11")
           .AddSubEntry(cf7::command::sub("i", "input", "Input file path", true))
           .AddSubEntry(
               cf7::command::sub("o", "output", "Output file path", true))
@@ -570,8 +554,9 @@ int main(int argc, char *argv[]) {
           .AddSubEntry(cf7::command::sub("i", "input", "Input png|bmp", true))
           .AddSubEntry(cf7::command::sub("o", "output",
                                          "Output path of .bclim file", true))
-          .AddSubEntry(cf7::command::sub("f", "format",
-                                         "Image format rgba32|rgb565|a8", true))
+          .AddSubEntry(cf7::command::sub(
+              "f", "format", "Image format rgba8888|rgb888|rgb565|a8|l8|a4|l4",
+              false))
           .SetFunction(BCLIMMaker));
   mgr.Execute();
   return 0;

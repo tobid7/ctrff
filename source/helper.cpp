@@ -28,7 +28,7 @@ CTRFF_API ctrff::u32 ctrff::TileIndex(const int &x, const int &y,
 
 // TODO: Fix colors
 CTRFF_API void ctrff::RGB565toRGBA(std::vector<ctrff::u8> &img,
-                                   ctrff::u16 *icon, const int &w,
+                                   const ctrff::u16 *icon, const int &w,
                                    const int &h) {
   if (img.size() != (w * h * 4)) {
     img.clear();

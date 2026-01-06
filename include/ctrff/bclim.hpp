@@ -9,24 +9,24 @@
 namespace ctrff {
 class CTRFF_API BCLIM : public BinFile {
  public:
-  BCLIM() {}
+  BCLIM() : pCurrent(Header::Default()), pImag(ImagHeader::Default()) {}
   ~BCLIM() {}
 
   enum Format : u32 {
-    L8,
+    L8,  // tested
     A8,  // tested
     LA4,
     LA8,
     HILO8,
     RGB565,  // tested
-    RGB888,
+    RGB888,  // tested
     RGBA5551,
     RGBA4444,
     RGBA8888,  // tested
     ETC1,
     ETC1A4,
-    L4,
-    A4,
+    L4,  // tested
+    A4,  // tested
   };
 
   struct Header {
