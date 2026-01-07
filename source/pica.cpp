@@ -164,12 +164,12 @@ CTRFF_API void DecodeImage(std::vector<ctrff::u8>& ret,
            * by this we either extract the high or low one and multiply
            * by 17 aka 0x11 to get the resulting A8 Value
            */
-          ctrff::u8 a4 = src & 1 ? ((ret[src >> 1] >> 4) & 0xf) * 0x11
-                                 : (ret[src >> 1] & 0xf) * 0x11;
-          pixels[dst + 0] = a4;
-          pixels[dst + 1] = a4;
-          pixels[dst + 2] = a4;
-          pixels[dst + 3] = 255;
+          ctrff::u8 a4 = src & 1 ? ((pixels[src >> 1] >> 4) & 0xf) * 0x11
+                                 : (pixels[src >> 1] & 0xf) * 0x11;
+          ret[dst + 0] = a4;
+          ret[dst + 1] = a4;
+          ret[dst + 2] = a4;
+          ret[dst + 3] = 255;
         }
       }
       break;
