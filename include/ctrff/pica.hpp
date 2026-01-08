@@ -9,15 +9,15 @@
 namespace ctrff {
 namespace Pica {
 enum Color : u32 {
-  L8,  // tested
-  A8,  // tested
-  LA4,
-  LA8,
+  L8,   // tested
+  A8,   // tested
+  LA4,  // tested
+  LA8,  // tested
   HILO8,
   RGB565,  // tested
   RGB888,  // tested
   RGBA5551,
-  RGBA4444,
+  RGBA4444,  // tested
   RGBA8888,  // tested
   ETC1,
   ETC1A4,

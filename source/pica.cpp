@@ -85,6 +85,64 @@ CTRFF_API void EncodeImage(std::vector<ctrff::u8>& ret,
         }
       }
       break;
+    case RGBA4444:
+      ret.resize(w * h * 2);
+      for (int x = 0; x < w; x++) {
+        for (int y = 0; y < h; y++) {
+          int src = (y * w + x) * 4;  // basic rgba indexing btw
+          int dst = ctrff::TileIndex(x, y, w) * 2;
+          ret[dst + 0] = rgba[src + 3] >> 4;
+          ret[dst + 0] |= (rgba[src + 2] >> 4) << 4;
+          ret[dst + 1] = rgba[src + 1] >> 4;
+          ret[dst + 1] |= (rgba[src + 0] >> 4) << 4;
+        }
+      }
+      break;
+    case RGBA5551:  // not working ???
+      ret.resize(w * h * 2);
+      for (int x = 0; x < w; x++) {
+        for (int y = 0; y < h; y++) {
+          int src = (y * w + x) * 4;  // basic rgba indexing btw
+          int dst = ctrff::TileIndex(x, y, w) * 2;
+          ctrff::u16 px = 0;
+          px |= (rgba[src + 3] < 128 ? 0 : 1) << 15;  // A
+          px |= ((rgba[src + 2] >> 3) & 0x1f) << 10;  // BBBBB
+          px |= ((rgba[src + 1] >> 3) & 0x1f) << 5;   // GGGGG
+          px |= ((rgba[src + 0] >> 3) & 0x1f);        // RRRRR
+          ret[dst] = px & 0xff;
+          ret[dst + 1] = (px << 8) & 0xff;
+        }
+      }
+      break;
+    case LA8:
+      ret.resize(w * h * 2);
+      for (int x = 0; x < w; x++) {
+        for (int y = 0; y < h; y++) {
+          int src = (y * w + x) * 4;  // basic rgba indexing btw
+          int dst = ctrff::TileIndex(x, y, w) * 2;
+          ret[dst] =
+              (rgba[src + 0] * 77 + rgba[src + 1] * 150 + rgba[src + 2] * 29) >>
+              8;
+          ret[dst + 1] = rgba[src + 3];
+        }
+      }
+      break;
+    case LA4:
+      ret.resize(w * h);
+      for (int x = 0; x < w; x++) {
+        for (int y = 0; y < h; y++) {
+          int src = (y * w + x) * 4;  // basic rgba indexing btw
+          int dst = ctrff::TileIndex(x, y, w);
+          ret[dst] = 0;
+          ret[dst] |= (((rgba[src + 0] * 77 + rgba[src + 1] * 150 +
+                         rgba[src + 2] * 29) >>
+                        8) >>
+                       4) &
+                      0xf;
+          ret[dst] |= (((rgba[src + 3] >> 4) & 0xf) << 4) | ret[dst];
+        }
+      }
+      break;
 
     default:
       throw std::runtime_error("[ctrff] Pica: Unsupported Color format: " +
@@ -183,6 +241,62 @@ CTRFF_API void DecodeImage(std::vector<ctrff::u8>& ret,
           ret[dst + 1] = pixels[src];
           ret[dst + 2] = pixels[src];
           ret[dst + 3] = 255;
+        }
+      }
+      break;
+    case RGBA4444:
+      ret.resize(w * h * 4);
+      for (int x = 0; x < w; x++) {
+        for (int y = 0; y < h; y++) {
+          int src = ctrff::TileIndex(x, y, w) * 2;
+          int dst = (y * w + x) * 4;  // basic rgba indexing btw
+          ret[dst + 0] = ((pixels[src + 1] >> 4) & 0xf) << 4;
+          ret[dst + 1] = (pixels[src + 1] & 0xf) << 4;
+          ret[dst + 2] = ((pixels[src + 0] >> 4) & 0xf) << 4;
+          ret[dst + 3] = (pixels[src + 0] & 0xf) << 4;
+        }
+      }
+      break;
+    case RGBA5551:  // not working
+      ret.resize(w * h * 4);
+      for (int x = 0; x < w; x++) {
+        for (int y = 0; y < h; y++) {
+          int src = ctrff::TileIndex(x, y, w) * 2;
+          int dst = (y * w + x) * 4;  // basic rgba indexing btw
+          ctrff::u16 px = ret[src] | (ret[src + 1] << 8);
+
+          ret[dst + 0] = (px & 0x1f) * 0x1f;
+          ret[dst + 1] = ((px >> 5) & 0x1f) * 0x1f;
+          ret[dst + 2] = ((px >> 10) & 0x1f) * 0x1f;
+          ret[dst + 3] = 255;  // ((*px >> 15) & 0x1) ? 255 : 0;
+        }
+      }
+      break;
+    case LA8:
+      ret.resize(w * h * 4);
+      for (int x = 0; x < w; x++) {
+        for (int y = 0; y < h; y++) {
+          int src = ctrff::TileIndex(x, y, w) * 2;
+          int dst = (y * w + x) * 4;
+          ret[dst + 0] = pixels[src];
+          ret[dst + 1] = pixels[src];
+          ret[dst + 2] = pixels[src];
+          ret[dst + 3] = pixels[src + 1];
+        }
+      }
+      break;
+    case LA4:
+      ret.resize(w * h * 4);
+      for (int x = 0; x < w; x++) {
+        for (int y = 0; y < h; y++) {
+          int src = ctrff::TileIndex(x, y, w);
+          int dst = (y * w + x) * 4;
+          uint8_t l = (pixels[src] & 0xf) * 0x11;
+          uint8_t a = ((pixels[src] >> 4) & 0xf) * 0x11;
+          ret[dst + 0] = l;
+          ret[dst + 1] = l;
+          ret[dst + 2] = l;
+          ret[dst + 3] = a;
         }
       }
       break;

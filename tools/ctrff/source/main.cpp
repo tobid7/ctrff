@@ -474,13 +474,21 @@ void BCLIMMaker(const cf7::command::ArgumentList &data) {
   } else if (f == "l4") {
     fmt = ctrff::Pica::L4;
   } else if (f == "a8") {
-    fmt = ctrff::Pica::L8;
+    fmt = ctrff::Pica::A8;
   } else if (f == "l8") {
     fmt = ctrff::Pica::L8;
+  } else if (f == "la4") {
+    fmt = ctrff::Pica::LA4;
+  } else if (f == "la8") {
+    fmt = ctrff::Pica::LA8;
   } else if (f == "rgb565") {
     fmt = ctrff::Pica::RGB565;
   } else if (f == "rgb888") {
     fmt = ctrff::Pica::RGB888;
+  } else if (f == "rgba4444") {
+    fmt = ctrff::Pica::RGBA4444;
+  } else if (f == "rgba5551") {
+    fmt = ctrff::Pica::RGBA5551;
   } else if (f == "rgba8888") {
     fmt = ctrff::Pica::RGBA8888;
   }
@@ -555,7 +563,9 @@ int main(int argc, char *argv[]) {
           .AddSubEntry(cf7::command::sub("o", "output",
                                          "Output path of .bclim file", true))
           .AddSubEntry(cf7::command::sub(
-              "f", "format", "Image format rgba8888|rgb888|rgb565|a8|l8|a4|l4",
+              "f", "format",
+              "Image format "
+              "rgba8888|rgb888|rgba4444|rgba5551|rgb565|a8|l8|a4|l4|la4|la8",
               false))
           .SetFunction(BCLIMMaker));
   mgr.Execute();
