@@ -92,7 +92,7 @@ class CTRFF_API BCSTM {
     ctrff::u32 Size;
   };
 
-  struct StreamInfo {
+  struct CTRFF_API StreamInfo {
     StreamInfo();
     ctrff::u8 Encoding;
     ctrff::u8 Loop;

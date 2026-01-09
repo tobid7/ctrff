@@ -23,7 +23,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-/*
+
+#ifdef CTRFF_SHARED
 #ifdef _WIN32  // Windows (MSVC Tested)
 #ifdef CTRFF_BUILD_SHARED
 #define CTRFF_API __declspec(dllexport)
@@ -45,9 +46,12 @@ SOFTWARE.
 #elif defined(__3DS__)  // 3ds Specific
 // Only Static supported
 #define CTRFF_API
-#else*/
+#else
 #define CTRFF_API
-//#endif
+#endif
+#else
+#define CTRFF_API
+#endif
 
 #include <cstddef>
 #include <format>
