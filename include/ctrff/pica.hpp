@@ -25,10 +25,10 @@ enum Color : u32 {
   A4,  // tested
 };
 CTRFF_API void EncodeImage(std::vector<ctrff::u8>& ret,
-                           std::vector<ctrff::u8> rgba, int w, int h,
+                           const std::vector<ctrff::u8>& rgba, int w, int h,
                            Color dst);
 CTRFF_API void DecodeImage(std::vector<ctrff::u8>& ret,
-                           std::vector<ctrff::u8> pixels, int w, int h,
+                           const std::vector<ctrff::u8>& pixels, int w, int h,
                            Color src);
 }  // namespace Pica
 }  // namespace ctrff

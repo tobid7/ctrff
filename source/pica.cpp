@@ -4,7 +4,7 @@
 namespace ctrff {
 namespace Pica {
 CTRFF_API void EncodeImage(std::vector<ctrff::u8>& ret,
-                           std::vector<ctrff::u8> rgba, int w, int h,
+                           const std::vector<ctrff::u8>& rgba, int w, int h,
                            Color dst_color) {
   // Only used in rgb/rgba
   int bpp = dst_color == RGBA8888 ? 4 : 3;
@@ -152,7 +152,7 @@ CTRFF_API void EncodeImage(std::vector<ctrff::u8>& ret,
 }
 
 CTRFF_API void DecodeImage(std::vector<ctrff::u8>& ret,
-                           std::vector<ctrff::u8> pixels, int w, int h,
+                           const std::vector<ctrff::u8>& pixels, int w, int h,
                            Color src_color) {
   switch (src_color) {
     case RGB565:
