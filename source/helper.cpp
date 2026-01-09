@@ -150,7 +150,7 @@ CTRFF_API std::string ctrff::U16toU8(ctrff::u16 *in, size_t max) {
     } else if (c < 0x800) {
       result.push_back(static_cast<char>(0xC0 | (c >> 6)));
       result.push_back(static_cast<char>(0x80 | (c & 0x3F)));
-    } else if (c < 0xffff) {
+    } else if (c <= 0xffff) {
       result.push_back(static_cast<char>(0xE0 | (c >> 12)));
       result.push_back(static_cast<char>(0x80 | ((c >> 6) & 0x3F)));
       result.push_back(static_cast<char>(0x80 | (c & 0x3F)));
