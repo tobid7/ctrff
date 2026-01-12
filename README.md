@@ -4,7 +4,7 @@ Tool/Library to work with Nintendo 3ds File formats
 
 ## Note
 
-**CTRFF Requires Palladium Headers from branch devel040 (as this is the branch the lib was latest tested with)**
+The Docs can be found in the [Wiki](https://github.com/tobid7/ctrff/wiki) now.
 
 ## Building
 
@@ -38,7 +38,7 @@ Not all Planned formates are listed here yet
 | bcstm | Loading of almost every Data | Fully done and playable by BCSTM-Player |
 | bcwav | Basic Loading (not tested yet) | Not finished yet |
 | bclim | Creating A4,A8,LA4,LA8,L4,L8,RGB24,RGBA32,RGBA4444,RGB565 done | WIP |
-| lz11 | Encoder done, Decoder missing | WIP |
+| lz11 | Encoder done, Decoder done | |
 | romfs | Nothing Done yet (Started creating header) | |
 | smdh | Almost done | missing safetey checks |
 | cbmd | Nothing done yet | |
