@@ -12,5 +12,6 @@ CTRFF_API void RGBA2RGB565(ctrff::u16 *out, const std::vector<ctrff::u8> &img,
                            const int &w, const int &h);
 CTRFF_API std::vector<ctrff::u8> DownscaleImage(
     const std::vector<ctrff::u8> &img, int w, int h, int scale);
+CTRFF_API void Flip(std::vector<u8> &buf, int w, int h);
 CTRFF_API ctrff::u32 TileIndex(const int &x, const int &y, const int &w);
 }  // namespace ctrff

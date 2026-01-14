@@ -87,6 +87,20 @@ CTRFF_API std::vector<ctrff::u8> ctrff::DownscaleImage(
   return res;
 }
 
+CTRFF_API void ctrff::Flip(std::vector<ctrff::u8> &buf, int w, int h) {
+  std::vector<ctrff::u8> tmp = buf;
+  for (int x = 0; x < w; x++) {
+    for (int y = 0; y < h; y++) {
+      int src = (y * w + x) * 4;
+      int dst = ((h - 1 - y) * w + x) * 4;
+      buf[dst + 0] = tmp[src + 0];
+      buf[dst + 1] = tmp[src + 1];
+      buf[dst + 2] = tmp[src + 2];
+      buf[dst + 3] = tmp[src + 3];
+    }
+  }
+}
+
 CTRFF_API void ctrff::String2U16(ctrff::u16 *res, const std::string &src,
                                  size_t max) {
   /// GOT FORCED TO REPLACE std::wstring_convert by some
