@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(ctrff)
+project(ctrff VERSION 0.2.0)
+
+include(GNUInstallDirs)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
@@ -9,7 +11,7 @@ option(CTRFF_DESKTOP OFF "Buid for Desktop Platform")
 option(CTRFF_3DS OFF "Build lib for 3ds")
 option(CTRFF_SHARED OFF)
 
-if(${CTRFF_3DS})
+if(CTRFF_3DS)
     set(CTRFF_DESKTOP OFF CACHE BOOL)
     set(CTRFF_BUILD_GUI OFF CACHE BOOL)
     set(CTRFF_SHARED OFF CACHE BOOL)
@@ -35,18 +37,54 @@ set(CTRFF_SOURCE
     source/smdh.cpp
 )
 
-if(${CTRFF_SHARED})
-add_library(ctrff SHARED ${CTRFF_SOURCE})
-target_compile_definitions(ctrff PUBLIC CTRFF_SHARED)
-target_compile_definitions(ctrff PRIVATE CTRFF_BUILD_SHARED)
+if(CTRFF_SHARED)
+    add_library(ctrff SHARED ${CTRFF_SOURCE})
+    target_compile_definitions(ctrff PUBLIC CTRFF_SHARED)
+    target_compile_definitions(ctrff PRIVATE CTRFF_BUILD_SHARED)
 else()
-add_library(ctrff STATIC ${CTRFF_SOURCE})
+    add_library(ctrff STATIC ${CTRFF_SOURCE})
 endif()
-target_include_directories(ctrff PUBLIC include)
 
-if(${CTRFF_DESKTOP})
+target_include_directories(ctrff
+    PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+
+if(CTRFF_DESKTOP)
     add_subdirectory(tools)
 endif()
 
-install(TARGETS ctrff)
-install(DIRECTORY include DESTINATION ".")
+install(TARGETS ctrff
+    EXPORT ctrffTargets
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+install(DIRECTORY include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+install(EXPORT ctrffTargets
+    FILE ctrffTargets.cmake
+    NAMESPACE ctrff::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ctrff
+)
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+    cmake/ctrffConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/ctrffConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ctrff
+)
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/ctrffConfigVersion.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/ctrffConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/ctrffConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ctrff
+)

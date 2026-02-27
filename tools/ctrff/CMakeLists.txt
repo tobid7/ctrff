@@ -18,5 +18,8 @@ target_include_directories(test PUBLIC include
     ${CMAKE_CURRENT_SOURCE_DIR}/../../vendor/cli-fancy/include
 )
 target_link_libraries(test PUBLIC ctrff)
+set_target_properties(ctrff-cli PROPERTIES
+    OUTPUT_NAME ctrff
+)
 
 install(TARGETS ctrff-cli)

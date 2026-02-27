@@ -10,7 +10,7 @@
 #include <utility>
 
 /** Import palladium stb image */
-#include <pd/external/stb_image.h>
+#include <pd/external/stb_image.hpp>
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
 /** Could not use the palladium func due to only using headers */
@@ -121,7 +121,7 @@ void MakeSMDH(const cf7::command::ArgumentList &data) {
   smdh.SetAuthor(a);
   std::vector<unsigned char> img;
   int w, h, c;
-  ctrff::u8 *buf = stbi_load(i.c_str(), &w, &h, &c, 4);
+  ctrff::u8 *buf = pdi_load(i.c_str(), &w, &h, &c, 4);
   if (buf == nullptr) {
     cf7::PrintFancy({
         std::make_pair("Error", cf7::col(190, 0, 0)),
