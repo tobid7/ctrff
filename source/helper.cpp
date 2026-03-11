@@ -30,7 +30,7 @@ CTRFF_API ctrff::u32 ctrff::TileIndex(const int &x, const int &y,
 CTRFF_API void ctrff::RGB565toRGBA(std::vector<ctrff::u8> &img,
                                    const ctrff::u16 *icon, const int &w,
                                    const int &h) {
-  if (img.size() != (w * h * 4)) {
+  if (img.size() != size_t(w * h * 4)) {
     img.clear();
     img.resize(w * h * 4);
   }

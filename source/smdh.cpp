@@ -18,12 +18,12 @@ CTRFF_API void ctrff::SMDH::Write(std::fstream &f) const {
 }
 
 CTRFF_API void ctrff::SMDH::Read(std::fstream &f) {
-  f.seekg(0, std::ios::end);
+  /*f.seekg(0, std::ios::end);
   if (f.tellg() != SMDH_Size) {
     throw std::runtime_error(
         "SMDH: File size does not match the SMDH Header size!");
   }
-  f.seekg(0, std::ios::beg);
+  f.seekg(0, std::ios::beg);*/
   f.read(reinterpret_cast<char *>(Magic), sizeof(Magic));
   if (std::string(Magic) != smdh_magic) {
     throw std::runtime_error("SMDH: Invalid SMDH file!");

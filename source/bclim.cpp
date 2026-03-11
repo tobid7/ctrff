@@ -47,7 +47,7 @@ CTRFF_API void BCLIM::CreateByImage(const std::vector<u8>& data, int w, int h,
   pImag.Height = h;
   pImag.ImageSize = data.size();
   pBuffer.resize(data.size());
-  for (int i = 0; i < data.size(); i++) {
+  for (size_t i = 0; i < data.size(); i++) {
     pBuffer[i] = data[i];
   }
   pCurrent.FileSize = pBuffer.size() + pCurrent.HeaderSize + pImag.HeaderSize;

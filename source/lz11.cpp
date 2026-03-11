@@ -166,7 +166,7 @@ CTRFF_API std::vector<ctrff::u8> Decompress(const std::vector<ctrff::u8>& in) {
           dst_off++;
         }
       }
-      if (dst_off >= len) return ret;
+      if ((u32)dst_off >= len) return ret;
       header <<= 1;
     }
   }
