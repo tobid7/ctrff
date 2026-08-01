@@ -31,6 +31,7 @@ set(CTRFF_SOURCE
     source/bcstm.cpp
     source/bcwav.cpp
     source/binutil.cpp
+    source/etc1.cpp
     source/helper.cpp
     source/lz11.cpp
     source/pica.cpp

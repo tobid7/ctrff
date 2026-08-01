@@ -1,3 +1,4 @@
+#include <ctrff/etc1.hpp>
 #include <ctrff/helper.hpp>
 #include <ctrff/pica.hpp>
 
@@ -142,6 +143,12 @@ CTRFF_API void EncodeImage(std::vector<ctrff::u8>& ret,
           ret[dst] |= (((rgba[src + 3] >> 4) & 0xf) << 4) | ret[dst];
         }
       }
+      break;
+    case ETC1:
+      Etc1::Encode(ret, rgba, w, h, false);
+      break;
+    case ETC1A4:
+      Etc1::Encode(ret, rgba, w, h, true);
       break;
 
     default:
@@ -299,6 +306,12 @@ CTRFF_API void DecodeImage(std::vector<ctrff::u8>& ret,
           ret[dst + 3] = a;
         }
       }
+      break;
+    case ETC1:
+      Etc1::Decode(ret, pixels, w, h, false);
+      break;
+    case ETC1A4:
+      Etc1::Decode(ret, pixels, w, h, true);
       break;
 
     default:
