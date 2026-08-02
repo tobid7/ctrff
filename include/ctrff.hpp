@@ -5,6 +5,7 @@
 #include <ctrff/bcstm.hpp>
 #include <ctrff/bcwav.hpp>
 #include <ctrff/binutil.hpp>
+#include <ctrff/darc.hpp>
 #include <ctrff/lz11.hpp>
 #include <ctrff/pica.hpp>
 #include <ctrff/smdh.hpp>

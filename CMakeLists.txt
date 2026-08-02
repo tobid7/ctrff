@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(ctrff VERSION 0.2.0)
+project(ctrff VERSION 0.3.0)
 
 include(GNUInstallDirs)
 
@@ -31,6 +31,7 @@ set(CTRFF_SOURCE
     source/bcstm.cpp
     source/bcwav.cpp
     source/binutil.cpp
+    source/darc.cpp
     source/etc1.cpp
     source/helper.cpp
     source/lz11.cpp

@@ -502,11 +502,37 @@ void BCLIMMaker(const cf7::command::ArgumentList &data) {
   std::cout << "File " + o + " created" << std::endl;
 }
 
+void DARCMaker(const cf7::command::ArgumentList &data) {
+  std::string i = cf7::command::GetArg(data, "input");
+  std::string o = cf7::command::GetArg(data, "output");
+  if (i.empty() || o.empty()) {
+    std::cout << "[ctrff] DARC: Error, no input or output" << std::endl;
+    return;
+  }
+  ctrff::Darc darc;
+  darc.BuildFromDirectory(i);
+  darc.Save(o);
+  std::cout << "[ctrff] DARC: Archive Created..." << std::endl;
+}
+
+void DARCExtractor(const cf7::command::ArgumentList &data) {
+  std::string i = cf7::command::GetArg(data, "input");
+  std::string o = cf7::command::GetArg(data, "output");
+  if (i.empty() || o.empty()) {
+    std::cout << "[ctrff] DARC: Error, no input or output" << std::endl;
+    return;
+  }
+  ctrff::Darc darc;
+  darc.Load(i);
+  darc.ExtractTo(o);
+  std::cout << "[ctrff] DARC: Archive Extracted..." << std::endl;
+}
+
 int main(int argc, char *argv[]) {
   cf7::fancy_print = false;
   cf7::colors_supported = false;
   cf7::arg_mgr mgr(argc, argv);
-  mgr.SetAppInfo("ctrff", "1.0.0");
+  mgr.SetAppInfo("ctrff", "0.3.0");
   auto makesmdh_cmd = cf7::command("makesmdh", "Create a SMDH File");
   makesmdh_cmd.AddSubEntry(
       cf7::command::sub("i", "icon", "Icon file path (48x48)", true));
@@ -562,12 +588,25 @@ int main(int argc, char *argv[]) {
           .AddSubEntry(cf7::command::sub("i", "input", "Input png|bmp", true))
           .AddSubEntry(cf7::command::sub("o", "output",
                                          "Output path of .bclim file", true))
-          .AddSubEntry(cf7::command::sub(
-              "f", "format",
-              "Image format "
-              "rgba8888|rgb888|rgba4444|rgba5551|rgb565|a8|l8|a4|l4|la4|la8",
-              false))
+          .AddSubEntry(
+              cf7::command::sub("f", "format",
+                                "Image format "
+                                "rgba8888|rgb888|rgba4444|rgba5551|rgb565|a8|"
+                                "l8|a4|l4|la4|la8|etc1|etc1a4",
+                                false))
           .SetFunction(BCLIMMaker));
+  mgr.AddCommand(cf7::command("makedarc", "Create a DARC Archive")
+                     .AddSubEntry(cf7::command::sub(
+                         "i", "input", "Directory to build archive of", true))
+                     .AddSubEntry(cf7::command::sub("o", "output",
+                                                    "Output File name", true))
+                     .SetFunction(DARCMaker));
+  mgr.AddCommand(
+      cf7::command("extractdarc", "Extract a DARC Archive")
+          .AddSubEntry(cf7::command::sub("i", "input", "Input Filename", true))
+          .AddSubEntry(
+              cf7::command::sub("o", "output", "Outout directory name", true))
+          .SetFunction(DARCExtractor));
   mgr.Execute();
   return 0;
 }
