@@ -17,7 +17,7 @@ u64 Swap64(u64 v) {
 }
 
 u64 Grab64(const u8* ref, size_t& pos, size_t max) {
-  if (pos + 8 >= max) {
+  if (pos + 8 > max) {
     return 0;
   }
   u64 res = 0x0ULL;
