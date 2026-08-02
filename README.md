@@ -37,10 +37,10 @@ Not all Planned formates are listed here yet
 | 3dsx | Basic Loading and Viewing of Meta Data Smdh | |
 | bcstm | Loading of almost every Data | Fully done and playable by BCSTM-Player |
 | bcwav | Basic Loading (not tested yet) | Not finished yet |
-| bclim | Creating A4,A8,LA4,LA8,L4,L8,RGB24,RGBA32,RGBA4444,RGB565 done | WIP |
+| bclim | Creating A4,A8,LA4,LA8,L4,L8,RGB24,RGBA32,RGBA4444,RGB565,ETC1,ETC1A4 done | WIP |
 | lz11 | Encoder done, Decoder done | |
 | romfs | Nothing Done yet (Started creating header) | |
 | smdh | Almost done | missing safetey checks |
 | cbmd | Nothing done yet | |
 | cgfx | Nothing Done yet | |
-| darc | Nothing done yet | |
+| darc | Nothing done yet | Done |
