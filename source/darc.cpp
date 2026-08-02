@@ -13,7 +13,7 @@ u32 Darc::AddDirectory(const std::string& path) {
 
     if (it.is_directory()) {
       pEntries.push_back({name16, it.path().string(), true, 0, 1, 0});
-      u32 childs = AddDirectory(it.path());
+      u32 childs = AddDirectory(it.path().string());
 
       pEntries[idx].DataSize = idx + 1 + childs;
       entries += 1 + childs;

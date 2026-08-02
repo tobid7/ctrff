@@ -30,7 +30,7 @@ class CTRFF_API Darc : public BinFile {
   void Read(std::fstream& f) override;
 
   void BuildFromDirectory(const std::string& path);
-  void ExtractTo(const std::string& out_dir) const;
+  void ExtractTo(const std::string& path) const;
 
   struct Header {
     static Header Default() {
