@@ -44,3 +44,5 @@ Not all Planned formates are listed here yet
 | cbmd | Nothing done yet | |
 | cgfx | Nothing Done yet | |
 | darc | Nothing done yet | Done |
+| bclyt | Support for creating startup Logos (needs more research) | |
+| bclan | Support for creating startup Logos (needs more research) | |

@@ -27,7 +27,9 @@ endif()
 
 set(CTRFF_SOURCE
     source/3dsx.cpp
+    source/bclan.cpp
     source/bclim.cpp
+    source/bclyt.cpp
     source/bcstm.cpp
     source/bcwav.cpp
     source/binutil.cpp

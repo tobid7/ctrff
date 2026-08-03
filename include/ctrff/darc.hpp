@@ -25,7 +25,6 @@ class CTRFF_API Darc : public BinFile {
     f.close();
   }
 
-  /** Write not supported btw */
   void Write(std::fstream& f) const override;
   void Read(std::fstream& f) override;
 
