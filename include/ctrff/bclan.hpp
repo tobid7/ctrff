@@ -35,7 +35,7 @@ class CTRFF_API BcLan : public BinFile {
     f.close();
   }
 
-  void Write(std::fstream& f) const;
+  void Write(std::fstream& f) const override;
   void Read(std::fstream& f) override {}
 
   void CreateLogoAnim(const std::string& scene_name,
