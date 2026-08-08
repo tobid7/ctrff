@@ -108,7 +108,7 @@ CTRFF_API void Darc::BuildFromDirectory(const std::string& path) {
   pTotalFileSize = filedata_offset;
 }
 
-void Darc::Write(std::fstream& f) const {
+void Darc::Write(Stream& f) const {
   Header h = Header::Default();
   h.TableSize = pTableSize;
   h.DataOffset = pDataOffsetBase;
@@ -156,13 +156,13 @@ void Darc::Write(std::fstream& f) const {
 
       std::ifstream in(entry.FsPath, std::ios::binary);
       if (in) {
-        f << in.rdbuf();
+        f << in;
       }
     }
   }
 }
 
-void Darc::Read(std::fstream& f) {
+void Darc::Read(Stream& f) {
   pEntries.clear();
   BinUtil u(f);
 
@@ -242,11 +242,7 @@ void Darc::ExtractTo(const std::string& path) const {
         "[ctrff] DARC: Archive was not loaded from a file!");
   }
 
-  std::ifstream f(pLoadedFilePath, std::ios::binary);
-  if (!f) {
-    throw std::runtime_error(
-        "[ctrff] DARC: Could not open archive for extraction!");
-  }
+  pStream->reopen();
 
   std::filesystem::create_directories(path);
 
@@ -262,14 +258,25 @@ void Darc::ExtractTo(const std::string& path) const {
       std::filesystem::create_directories(
           std::filesystem::path(full_path).parent_path());
 
-      f.seekg(node.DataOffset, std::ios::beg);
+      pStream->seekg(node.DataOffset, std::ios::beg);
       std::vector<char> buffer(node.DataSize);
-      f.read(buffer.data(), node.DataSize);
+      pStream->read(buffer.data(), node.DataSize);
 
       std::ofstream out(full_path, std::ios::binary);
       out.write(buffer.data(), node.DataSize);
       out.close();
     }
   }
+}
+
+std::vector<u8> Darc::ExtractFile(u32 idx) {
+  std::vector<u8> ret;
+  if (idx >= pEntries.size()) return ret;
+  pStream->reopen();
+  pStream->seekg(pEntries[idx].DataOffset, std::ios::beg);
+  ret.resize(pEntries[idx].DataSize);
+  pStream->read(reinterpret_cast<char*>(ret.data()), ret.size());
+  pStream->close();
+  return ret;
 }
 }  // namespace ctrff

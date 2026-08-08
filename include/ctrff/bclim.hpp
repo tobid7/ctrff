@@ -68,15 +68,25 @@ class CTRFF_API BCLIM : public BinFile {
   };
 
   void Load(const std::string& path) {
-    std::fstream f(path, std::ios::in | std::ios::binary);
+    FileStream f(path, std::ios::in | std::ios::binary);
     Read(f);
     f.close();
   }
 
+  void Load(const std::vector<u8>& mem) {
+    MemoryStream ms(mem);
+    Read(ms);
+  }
+
   void Save(const std::string& path) {
-    std::fstream f(path, std::ios::out | std::ios::binary);
+    FileStream f(path, std::ios::out | std::ios::binary);
     Write(f);
     f.close();
+  }
+
+  void Save(std::vector<u8>& mem) {
+    MemoryStream ms(mem);
+    Write(ms);
   }
 
   void CreateByImage(const std::vector<u8>& data, int w, int h, Format fmt);
@@ -87,9 +97,8 @@ class CTRFF_API BCLIM : public BinFile {
   int GetHeight() const { return pImag.Height; }
   size_t GetByteCount() const { return pBuffer.size(); }
 
-  /** Write not supported btw */
-  void Write(std::fstream& f) const override;
-  void Read(std::fstream& f) override;
+  void Write(Stream& f) const override;
+  void Read(Stream& f) override;
 
  private:
   std::vector<u8> pBuffer;

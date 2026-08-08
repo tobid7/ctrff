@@ -1,7 +1,7 @@
 #include <ctrff/bclim.hpp>
 
 namespace ctrff {
-CTRFF_API void BCLIM::Write(std::fstream& f) const {
+CTRFF_API void BCLIM::Write(Stream& f) const {
   f.write(reinterpret_cast<const char*>(pBuffer.data()), pBuffer.size());
   f.write((const char*)&pCurrent.Magic, sizeof(pCurrent.Magic));
   f.write((const char*)&pCurrent.Endianness, sizeof(pCurrent.Endianness));
@@ -17,9 +17,8 @@ CTRFF_API void BCLIM::Write(std::fstream& f) const {
   f.write((const char*)&pImag.ImageSize, sizeof(pImag.ImageSize));
 }
 
-CTRFF_API void BCLIM::Read(std::fstream& f) {
-  f.seekg(0, std::ios::end);
-  size_t size = f.tellg();
+CTRFF_API void BCLIM::Read(Stream& f) {
+  size_t size = f.size();
   if (size < (sizeof(Header) + sizeof(ImagHeader))) {
     throw std::runtime_error("Invalid File!");
   }

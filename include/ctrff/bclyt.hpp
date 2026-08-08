@@ -30,19 +30,19 @@ class CTRFF_API BcLyt : public BinFile {
   ~BcLyt() {}
 
   void Load(const std::string& path) {
-    std::fstream f(path, std::ios::in | std::ios::binary);
+    FileStream f(path, std::ios::in | std::ios::binary);
     Read(f);
     f.close();
   }
 
   void Save(const std::string& path) {
-    std::fstream f(path, std::ios::out | std::ios::binary);
+    FileStream f(path, std::ios::out | std::ios::binary);
     Write(f);
     f.close();
   }
 
-  void Write(std::fstream& f) const override;
-  void Read(std::fstream& f) override {}
+  void Write(Stream& f) const override;
+  void Read(Stream& f) override {}
 
   // private:
   using DataBuffer = std::vector<u8>;  // make naming better

@@ -19,10 +19,10 @@ void BinUtil::Read(T& v) {
   v = 0;  // Set value to 0 (most cases a windows problem)
   std::vector<ctrff::u8> buf(sizeof(T), 0);  // declare buffer
   // Read data into buffer
-  m_file.read(reinterpret_cast<char*>(buf.data()), sizeof(T));
+  pStream.read(reinterpret_cast<char*>(buf.data()), sizeof(T));
   // Loop or in be reverse loop and chift the values
   for (size_t i = 0; i < sizeof(T); i++) {
-    v |= static_cast<T>(buf[m_big ? sizeof(T) - 1 - i : i]) << (8 * i);
+    v |= static_cast<T>(buf[pBig ? sizeof(T) - 1 - i : i]) << (8 * i);
   }
 }
 template <typename T>
@@ -32,10 +32,10 @@ void BinUtil::Write(const T& v) {
   std::vector<ctrff::u8> buf(sizeof(T), 0);  // declare buffer
   // Loop or in be reverse loop and write the values
   for (size_t i = 0; i < sizeof(T); i++) {
-    buf[(m_big ? sizeof(T) - 1 - i : i)] = buf[m_big ? sizeof(T) - 1 - i : i] =
+    buf[(pBig ? sizeof(T) - 1 - i : i)] = buf[pBig ? sizeof(T) - 1 - i : i] =
         static_cast<ctrff::u8>((v >> (8 * i)) & 0xFF);
   }
   // Write buffer into file
-  m_file.write(reinterpret_cast<const char*>(buf.data()), sizeof(T));
+  pStream.write(reinterpret_cast<const char*>(buf.data()), sizeof(T));
 }
 }  // namespace ctrff

@@ -207,7 +207,7 @@ class CTRFF_API BCSTM {
   SD_Block pDataBlock;
   std::vector<DSP_ADPCM_Info> pDSP_ADPCM_Info;
   /** File Stream */
-  std::fstream pFile;
+  FileStream pFile;
   /** Endianness based reader */
   BinUtil pReader;
 

@@ -11,16 +11,15 @@ class CTRFF_API _3dsx : public BinFile {
   ~_3dsx() {}
 
   void Load(const std::string& path) {
-    std::fstream f(path, std::ios::in | std::ios::binary);
+    FileStream f(path, std::ios::in | std::ios::binary);
     Read(f);
-    f.close();
   }
 
   bool HasMeta() { return SMDHSize == SMDH_Size; }
 
   /** Write not supported btw */
-  void Write(std::fstream& f) const override;
-  void Read(std::fstream& f) override;
+  void Write(Stream& f) const override;
+  void Read(Stream& f) override;
 
   ctrff::u32 Magic;  // 0x58534433 "3DSX"
   ctrff::u16 HeaderSize;

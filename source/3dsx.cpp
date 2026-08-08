@@ -2,11 +2,11 @@
 #include <ctrff/binutil.hpp>
 
 namespace ctrff {
-CTRFF_API void _3dsx::Write(std::fstream& f) const {
+CTRFF_API void _3dsx::Write(Stream& f) const {
   // To be written
 }
 
-CTRFF_API void _3dsx::Read(std::fstream& f) {
+CTRFF_API void _3dsx::Read(Stream& f) {
   BinUtil r(f);
   r.ReadEx(Magic);
   r.ReadEx(HeaderSize);

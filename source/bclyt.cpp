@@ -1,7 +1,7 @@
 #include <ctrff/bclyt.hpp>
 
 namespace ctrff {
-void BcLyt::Write(std::fstream& f) const {
+void BcLyt::Write(Stream& f) const {
   BinUtil u(f);
   u.SetEndianess(pHeader.Endianness == 0xfffe);
   u.Write(pHeader.Magic);

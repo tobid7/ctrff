@@ -4,7 +4,7 @@
 // magic
 static const std::string smdh_magic = "SMDH";
 
-CTRFF_API void ctrff::SMDH::Write(std::fstream &f) const {
+CTRFF_API void ctrff::SMDH::Write(Stream &f) const {
   f.write(reinterpret_cast<const char *>(Magic), sizeof(Magic));
   f.write(reinterpret_cast<const char *>(&Version), sizeof(Version));
   f.write(reinterpret_cast<const char *>(&Reserved), sizeof(Reserved));
@@ -17,7 +17,7 @@ CTRFF_API void ctrff::SMDH::Write(std::fstream &f) const {
   f.write(reinterpret_cast<const char *>(&IconLarge), sizeof(IconLarge));
 }
 
-CTRFF_API void ctrff::SMDH::Read(std::fstream &f) {
+CTRFF_API void ctrff::SMDH::Read(Stream &f) {
   /*f.seekg(0, std::ios::end);
   if (f.tellg() != SMDH_Size) {
     throw std::runtime_error(

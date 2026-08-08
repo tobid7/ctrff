@@ -62,7 +62,7 @@ void BcLan::CreateLogoAnim(const std::string& scene_name,
   pHeader.FileSize = sizeof(BcLan::Header) + pBuffer.size();
 }
 
-void BcLan::Write(std::fstream& f) const {
+void BcLan::Write(Stream& f) const {
   BinUtil u(f);
   u.SetEndianess(pHeader.Endianness == 0xfffe);
   u.Write(pHeader.Magic);
