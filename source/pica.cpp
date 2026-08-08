@@ -106,12 +106,12 @@ CTRFF_API void EncodeImage(std::vector<ctrff::u8>& ret,
           int src = (y * w + x) * 4;  // basic rgba indexing btw
           int dst = ctrff::TileIndex(x, y, w) * 2;
           ctrff::u16 px = 0;
-          px |= (rgba[src + 3] < 128 ? 0 : 1) << 15;  // A
-          px |= ((rgba[src + 2] >> 3) & 0x1f) << 10;  // BBBBB
-          px |= ((rgba[src + 1] >> 3) & 0x1f) << 5;   // GGGGG
-          px |= ((rgba[src + 0] >> 3) & 0x1f);        // RRRRR
+          px |= (rgba[src + 3] < 128 ? 0 : 1);        // A
+          px |= ((rgba[src + 2] >> 3) & 0x1f) << 1;   // BBBBB
+          px |= ((rgba[src + 1] >> 3) & 0x1f) << 6;   // GGGGG
+          px |= ((rgba[src + 0] >> 3) & 0x1f) << 11;  // RRRRR
           ret[dst] = px & 0xff;
-          ret[dst + 1] = (px << 8) & 0xff;
+          ret[dst + 1] = (px >> 8) & 0xff;
         }
       }
       break;
@@ -270,12 +270,12 @@ CTRFF_API void DecodeImage(std::vector<ctrff::u8>& ret,
         for (int y = 0; y < h; y++) {
           int src = ctrff::TileIndex(x, y, w) * 2;
           int dst = (y * w + x) * 4;  // basic rgba indexing btw
-          ctrff::u16 px = ret[src] | (ret[src + 1] << 8);
+          ctrff::u16 px = pixels[src] | (pixels[src + 1] << 8);
 
-          ret[dst + 0] = (px & 0x1f) * 0x1f;
-          ret[dst + 1] = ((px >> 5) & 0x1f) * 0x1f;
-          ret[dst + 2] = ((px >> 10) & 0x1f) * 0x1f;
-          ret[dst + 3] = 255;  // ((*px >> 15) & 0x1) ? 255 : 0;
+          ret[dst + 0] = ((px >> 11) & 0x1f) << 3;
+          ret[dst + 1] = ((px >> 6) & 0x1f) << 3;
+          ret[dst + 2] = ((px >> 1) & 0x1f) << 3;
+          ret[dst + 3] = (px & 0x1) ? 255 : 0;
         }
       }
       break;
