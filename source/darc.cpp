@@ -5,6 +5,7 @@ u32 Darc::AddDirectory(const std::string& path) {
   u32 entries = 0;
 
   for (auto& it : std::filesystem::directory_iterator(path)) {
+    if (it.path().filename().string() == ".DS_Store") continue;
     u32 idx = pEntries.size();
 
     u16 buffer[256] = {0};
