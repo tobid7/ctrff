@@ -138,7 +138,7 @@ void MakeSMDH(const cf7::command::ArgumentList &data) {
   }
   img.assign(buf, buf + (w * h * 4));
   smdh.SetIcon(img);
-  std::fstream f(o, std::ios::out | std::ios::binary);
+  ctrff::FileStream f(o, std::ios::out | std::ios::binary);
   smdh.Write(f);
   cf7::PrintFancy({
       std::make_pair("File Generated", cf7::col(0, 190, 0)),
@@ -463,8 +463,9 @@ void BCLIMMaker(const cf7::command::ArgumentList &data) {
   }
   if (!PD::BitUtil::IsSingleBit(img->Width()) ||
       !PD::BitUtil::IsSingleBit(img->Height())) {
-    std::cout << "[ctrff] BCLIM: Image with and height must be a power of 8!";
-    return;
+    std::cout
+        << "[ctrff] BCLIM Warning: Image with and height must be a power of 8!"
+        << std::endl;
   }
   img->Convert(img, img->RGBA);
   std::vector<ctrff::u8> res;
@@ -491,6 +492,10 @@ void BCLIMMaker(const cf7::command::ArgumentList &data) {
     fmt = ctrff::Pica::RGBA5551;
   } else if (f == "rgba8888") {
     fmt = ctrff::Pica::RGBA8888;
+  } else if (f == "etc1") {
+    fmt = ctrff::Pica::ETC1;
+  } else if (f == "etc1a4") {
+    fmt = ctrff::Pica::ETC1A4;
   }
   ctrff::Pica::EncodeImage(res, img->GetBuffer(), img->Width(), img->Height(),
                            fmt);

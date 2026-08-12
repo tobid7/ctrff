@@ -15,7 +15,7 @@ void Result(const std::string& name, T a, T b) {
 }
 
 void BinTest(bool be) {
-  std::fstream s("test.bin", std::ios::out | std::ios::binary);
+  ctrff::FileStream s("test.bin", std::ios::out | std::ios::binary);
   ctrff::u8 t8 = 0xdf;
   ctrff::u16 t16 = 0x4564;
   ctrff::u32 t32 = 0x58464743;
