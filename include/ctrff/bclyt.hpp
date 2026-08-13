@@ -79,7 +79,7 @@ class CTRFF_API BcLyt : public BinFile {
     pInsertString(data, name, 0x14);
 
     pInsertU32(data, 0x00ffffff);
-    for (int i = 0; i < 3; i++) pInsertU32(data, 0xffffffff);  // colors
+    for (int i = 0; i < 6; i++) pInsertU32(data, 0xffffffff);  // colors
 
     pInsertU32(data, 0x15);        // flags
     pInsertU32(data, 0x04040000);  // Texture index/mapping
@@ -191,7 +191,6 @@ class CTRFF_API BcLyt : public BinFile {
     pAddPicSection("HbMat", tex_coords[0], tex_coords[1], tex_coords[2],
                    tex_coords[3], tex_coords[4]);
 
-    pAddSection(0x31656170, {});  // Finish Pane (Pic)
     pAddSection(0x31656170, {});  // Finish Pane (Root0)
     pAddSection(0x31656170, {});  // Finish Pane (RootPane)
 
