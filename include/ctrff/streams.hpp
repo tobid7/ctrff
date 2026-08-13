@@ -20,7 +20,7 @@ class Stream {
   virtual bool is_open() = 0;
   virtual void reopen() = 0;
 
-  size_t size() const { return pSize; }
+  virtual size_t size() const { return pSize; }
 
   Stream& operator<<(Stream& in) {
     size_t r = in.size() - in.tellg();
@@ -66,6 +66,7 @@ class MemoryStream : public Stream {
   }
   ~MemoryStream() {}
 
+  size_t size() const override { return cref ? cref->size() : 0; }
   bool is_open() override { return true; }
   void close() override {}
   void seekg(size_t off, std::ios::seekdir dir) override {
@@ -85,7 +86,7 @@ class MemoryStream : public Stream {
       throw std::runtime_error(
           "[ctrff] MemoryStream::read: out of range!\n" +
           std::format("R: {}\nB: {}\nS: {}", pPosR, bytes, size()));
-    std::memcpy(ptr, &(*cref)[pPosR], bytes);
+    std::memcpy(ptr, cref->data() + pPosR, bytes);
     pPosR += bytes;
   }
 

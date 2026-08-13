@@ -29,8 +29,10 @@ class CTRFF_API Darc : public BinFile {
     pLoadedFilePath = path;
   }
 
-  void Load(const std::vector<u8>& mem) {
-    pStream = new MemoryStream(mem);
+  void Load(std::vector<u8> mem) {
+    // taking mem for not going out of scope
+    pMemBuf = std::move(mem);
+    pStream = new MemoryStream(pMemBuf);
     Read(*pStream);
     // just something telling ExtractTo we are in loading mode
     pLoadedFilePath = "<mem>";
@@ -90,6 +92,7 @@ class CTRFF_API Darc : public BinFile {
   };
 
   // private:
+  std::vector<ctrff::u8> pMemBuf;
   Stream* pStream = nullptr;
   std::vector<DarcNode> pEntries;
   u32 pTableSize = 0;
