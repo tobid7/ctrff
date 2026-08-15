@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstring>
 #include <ctrff/types.hpp>
 #include <fstream>
 #include <string>
