@@ -63,11 +63,13 @@ void Decode(std::vector<u8>& res, const std::vector<u8>& buf, int w, int h,
           for (int px = XT[t]; px < 4 + XT[t]; px++) {
             int offs = ((h - 1 - (ty + py)) * w + tx + px) * 4;
             for (int i = 0; i < 3; i++) {
-              res[offs + i] = tile[tileoff + i];
+              // need to fix non pow 2 images
+              if ((offs + i) < res.size()) res[offs + i] = tile[tileoff + i];
             }
             int alpha_shift = ((px & 3) * 4 + (py & 3)) << 2;
             u8 a = static_cast<u8>(alpha_block >> alpha_shift) & 0xf;
-            res[offs + 3] = static_cast<u8>(a << 4) | a;
+            if ((offs + 3) < res.size())  // need to fix non pow 2 images
+              res[offs + 3] = static_cast<u8>(a << 4) | a;
             tileoff += 4;
           }
         }
