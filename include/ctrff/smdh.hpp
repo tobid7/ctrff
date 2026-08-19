@@ -80,26 +80,38 @@ struct CTRFF_API SMDH {
     Flag_DEFAULT = Flag_VISIBLE | Flag_ALLOW_3D | Flag_RECORD_USAGE,
   };
 
-  void Load(const std::string &path) {
+  void Load(const std::string& path) {
     FileStream f(path, std::ios::in | std::ios::binary);
     Read(f);
     f.close();
   }
 
-  void Save(const std::string &path) {
+  void Load(const std::vector<u8>& data) {
+    MemoryStream ms(data);
+    Read(ms);
+    ms.close();
+  }
+
+  void Save(const std::string& path) {
     FileStream f(path, std::ios::out | std::ios::binary);
     Write(f);
     f.close();
   }
 
-  void Write(Stream &f) const;
-  void Read(Stream &f);
+  void Save(std::vector<u8>& ret) {
+    MemoryStream ms(ret);
+    Write(ms);
+    ms.close();
+  }
 
-  void SetIcon(const std::vector<ctrff::u8> &buf);
+  void Write(Stream& f) const;
+  void Read(Stream& f);
+
+  void SetIcon(const std::vector<ctrff::u8>& buf);
   std::vector<ctrff::u8> GetIcon();
-  void SetShortTitle(const std::string &t, Language l = Language_All);
-  void SetLongTitle(const std::string &t, Language l = Language_All);
-  void SetAuthor(const std::string &t, Language l = Language_All);
+  void SetShortTitle(const std::string& t, Language l = Language_All);
+  void SetLongTitle(const std::string& t, Language l = Language_All);
+  void SetAuthor(const std::string& t, Language l = Language_All);
   std::string GetShortTitle(Language l = Language_All);
   std::string GetLongTitle(Language l = Language_All);
   std::string GetAuthor(Language l = Language_All);
