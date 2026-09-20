@@ -7,6 +7,9 @@ namespace Pica {
 CTRFF_API void EncodeImage(std::vector<ctrff::u8>& ret,
                            const std::vector<ctrff::u8>& rgba, int w, int h,
                            Color dst_color) {
+  if (rgba.size() != (w * h * 4))
+    throw std::runtime_error(
+        "[ctrff] Pica::EncodeImage: Input buffer is not rgba!");
   // Only used in rgb/rgba
   int bpp = dst_color == RGBA8888 ? 4 : 3;
   switch (dst_color) {

@@ -337,10 +337,10 @@ u64 Tile(const std::vector<u8>& data) {
           bT = t;
           bestSel = currentSel;
         }
-        err += suberr;
-        table[s] = bT;
-        sectors |= bestSel;
       }
+      err += suberr;
+      table[s] = bT;
+      sectors |= bestSel;
       if (err < min_err) {
         min_err = err;
         // Lets build this block
