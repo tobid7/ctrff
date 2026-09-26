@@ -52,4 +52,39 @@ CTRFF_API void BCLIM::CreateByImage(const std::vector<u8>& data, int w, int h,
   pCurrent.FileSize = pBuffer.size() + pCurrent.HeaderSize + pImag.HeaderSize;
   pCurrent.NumSections = 1;
 }
+
+Pica::Color BCLIM::Format2GpuColor(Format fmt) {
+  switch (fmt) {
+    case Format::L8:
+      return Pica::Color::L8;
+    case Format::A8:
+      return Pica::Color::A8;
+    case Format::LA4:
+      return Pica::Color::LA4;
+    case Format::LA8:
+      return Pica::Color::LA8;
+    case Format::HILO8:
+      return Pica::Color::HILO8;
+    case Format::RGB565:
+      return Pica::Color::RGB565;
+    case Format::RGB888:
+      return Pica::Color::RGB888;
+    case Format::RGBA5551:
+      return Pica::Color::RGBA5551;
+    case Format::RGBA4444:
+      return Pica::Color::RGBA4444;
+    case Format::RGBA8888:
+      return Pica::Color::RGBA8888;
+    case Format::ETC1:
+      return Pica::Color::ETC1;
+    case Format::ETC1A4:
+      return Pica::Color::ETC1A4;
+    case Format::L4:
+      return Pica::Color::L4;
+    case Format::A4:
+      return Pica::Color::A4;
+    default:
+      return Pica::Color::A8;
+  }
+}
 }  // namespace ctrff

@@ -3,6 +3,7 @@
 #include <cstring>
 #include <ctrff/binutil.hpp>
 #include <ctrff/helper.hpp>
+#include <ctrff/pica.hpp>
 #include <ctrff/types.hpp>
 #include <filesystem>
 
@@ -13,20 +14,20 @@ class CTRFF_API BCLIM : public BinFile {
   ~BCLIM() {}
 
   enum Format : u32 {
-    RGBA8888,  // tested
-    RGB888,    // tested
-    RGBA5551,
-    RGB565,    // tested
+    L8,  // tested
+    A8,  // tested
+    LA4,
+    LA8,     // tested
+    HILO8,   // tested
+    RGB565,  // tested
+    RGB888,
+    RGBA5551,  // tested
     RGBA4444,  // tested
-    LA8,       // tested
-    HILO8,
-    L8,   // tested
-    A8,   // tested
-    LA4,  // tested
-    L4,   // tested
-    A4,   // tested
-    ETC1,
-    ETC1A4,
+    RGBA8888,  // tested
+    ETC1,      // tested
+    ETC1A4,    // tested
+    L4,
+    A4,
   };
 
   struct Header {
@@ -99,6 +100,8 @@ class CTRFF_API BCLIM : public BinFile {
 
   void Write(Stream& f) const override;
   void Read(Stream& f) override;
+
+  static Pica::Color Format2GpuColor(Format fmt);
 
  private:
   std::vector<u8> pBuffer;
