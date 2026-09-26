@@ -207,7 +207,7 @@ std::vector<u8> Tile(u64 block) {
 }
 
 u64 Tile(u8* data) {
-  u64 block;
+  u64 block = 0;
   int min_err = std::numeric_limits<int>::max();
   for (int i = 0; i < 2; i++) {  // flip check
     int sum_r[2] = {0, 0};
@@ -217,8 +217,7 @@ u64 Tile(u8* data) {
     for (int j = 0; j < 16; j++) {
       int x = j % 4;
       int y = j / 4;
-      int block_idx = 0;
-      (i == 0) ? block_idx = ((x < 2) ? 0 : 1) : block_idx = ((y < 2) ? 0 : 1);
+      int block_idx = (i == 0) ? ((x < 2) ? 0 : 1) : ((y < 2) ? 0 : 1);
       sum_b[block_idx] += data[j * 4 + 0];
       sum_g[block_idx] += data[j * 4 + 1];
       sum_r[block_idx] += data[j * 4 + 2];
@@ -291,6 +290,7 @@ u64 Tile(u8* data) {
           if (sub != s) continue;
           int bme = std::numeric_limits<int>::max();
           int bmi = 0;
+
           for (int m = 0; m < 4; m++) {  // testing all 4 modifiers
             int v = ETC1LUT[t][m];
             int e =
@@ -330,33 +330,32 @@ u64 Tile(u8* data) {
         // Lets build this block
         u32 high32 = 0;
         if (diff) {
-          high32 |= (table[0] & 0x7) << 29;
-          high32 |= (table[1] & 0x7) << 26;
-          high32 |= 0x1 << 25;
+          high32 |= static_cast<u32>(table[0] & 0x7) << 29;
+          high32 |= static_cast<u32>(table[1] & 0x7) << 26;
+          high32 |= 0x1U << 25;
           if (i == 1) {
-            high32 |= 1 << 24;
+            high32 |= 1U << 24;
           }
-          high32 |= (r1 & 0x1f) << 19;
-          high32 |= (g1 & 0x1f) << 11;
-          high32 |= (b1 & 0x1f) << 3;
-          high32 |= (dr & 0x7) << 16;
-          high32 |= (dg & 0x7) << 8;
-          high32 |= (db & 0x7) << 0;
+          high32 |= static_cast<u32>(r1 & 0x1f) << 19;
+          high32 |= static_cast<u32>(g1 & 0x1f) << 11;
+          high32 |= static_cast<u32>(b1 & 0x1f) << 3;
+          high32 |= static_cast<u32>(dr & 0x7) << 16;
+          high32 |= static_cast<u32>(dg & 0x7) << 8;
+          high32 |= static_cast<u32>(db & 0x7) << 0;
         } else {  // Individual
-          high32 |= (table[0] & 0x7) << 29;
-          high32 |= (table[1] & 0x7) << 26;
+          high32 |= static_cast<u32>(table[0] & 0x7) << 29;
+          high32 |= static_cast<u32>(table[1] & 0x7) << 26;
           if (i == 1) {
-            high32 |= 1 << 24;
+            high32 |= 1U << 24;
           }
-          high32 |= (br1 >> 4) << 20;
-          high32 |= (bg1 >> 4) << 12;
-          high32 |= (bb1 >> 4) << 4;
-
-          high32 |= (br2 >> 4) << 16;
-          high32 |= (bg2 >> 4) << 8;
-          high32 |= (bb2 >> 4) << 0;
+          high32 |= static_cast<u32>(br1 >> 4) << 20;
+          high32 |= static_cast<u32>(bg1 >> 4) << 12;
+          high32 |= static_cast<u32>(bb1 >> 4) << 4;
+          high32 |= static_cast<u32>(br2 >> 4) << 16;
+          high32 |= static_cast<u32>(bg2 >> 4) << 8;
+          high32 |= static_cast<u32>(bb2 >> 4) << 0;
         }
-        block = (static_cast<u64>(sectors) << 32) | high32;
+        block = (static_cast<u64>(sectors) << 32) | static_cast<u64>(high32);
       }
     }
   }
