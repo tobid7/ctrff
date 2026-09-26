@@ -365,8 +365,6 @@ u64 Tile(const std::vector<u8>& data) {
 
 void Encode(std::vector<u8>& res, const std::vector<u8>& rgba, int w, int h,
             bool a4) {
-  std::vector<u8> rgbaflip = rgba;
-  ctrff::Flip(rgbaflip, w, h);
   res.clear();  // Make sure we have no trouble here
   for (int ty = 0; ty < h; ty += 8) {
     for (int tx = 0; tx < w; tx += 8) {
@@ -379,11 +377,11 @@ void Encode(std::vector<u8>& res, const std::vector<u8>& rgba, int w, int h,
             int srcX = tx + px;
             int srcY = ty + py;
             if (srcX < w && srcY < h) {
-              int offs = ((h - 1 - srcY) * w + srcX) * 4;
-              pixels[idx + 0] = rgbaflip[offs + 0];
-              pixels[idx + 1] = rgbaflip[offs + 1];
-              pixels[idx + 2] = rgbaflip[offs + 2];
-              pixels[idx + 3] = rgbaflip[offs + 3];
+              int offs = (srcY * w + srcX) * 4;
+              pixels[idx + 0] = rgba[offs + 0];
+              pixels[idx + 1] = rgba[offs + 1];
+              pixels[idx + 2] = rgba[offs + 2];
+              pixels[idx + 3] = rgba[offs + 3];
             }
             if (a4) {
               int shift = ((px & 3) * 4 + (py & 3)) << 2;
