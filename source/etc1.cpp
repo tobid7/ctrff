@@ -247,16 +247,7 @@ u64 Tile(const std::vector<u8>& data) {
     bool diff =
         (dr >= -4 && dr <= 3) && (dg >= -4 && dg <= 3) && (db >= -4 && db <= 3);
     int br1 = 0, bg1 = 0, bb1 = 0, br2 = 0, bg2 = 0, bb2 = 0;
-    u64 high = 0x0;
     if (diff) {  // Diff mode
-      high |= (1 << 25);
-      high |= (static_cast<u64>(r1 & 0x1f) << 27 |
-               static_cast<u64>(g1 & 0x1f) << 19 |
-               static_cast<u64>(b1 & 0x1f) << 11);
-      high |=
-          (static_cast<u64>(dr & 0x7) << 24 | static_cast<u64>(dg & 0x7) << 16 |
-           static_cast<u64>(db & 0x7) << 8);
-
       // 5 bit to 8 bit btw
       br1 = (r1 << 3) | (r1 >> 2);
       bg1 = (g1 << 3) | (g1 >> 2);
@@ -271,10 +262,6 @@ u64 Tile(const std::vector<u8>& data) {
       int ir2 = sum_r[1] >> 4;
       int ig2 = sum_g[1] >> 4;
       int ib2 = sum_b[1] >> 4;
-
-      high |= ((u64)ir1 << 28) | ((u64)ig1 << 20) | ((u64)ib1 << 12);
-      high |= ((u64)ir2 << 24) | ((u64)ig2 << 16) | ((u64)ib2 << 8);
-
       // 4 Bits to 8 btw
       br1 = (ir1 << 4) | ir1;
       bg1 = (ig1 << 4) | ig1;
@@ -282,9 +269,6 @@ u64 Tile(const std::vector<u8>& data) {
       br2 = (ir2 << 4) | ir2;
       bg2 = (ig2 << 4) | ig2;
       bb2 = (ib2 << 4) | ib2;
-    }
-    if (i == 1) {
-      high |= 1ULL;
     }
     int table[2] = {0, 0};
     u32 sectors = 0;
@@ -344,12 +328,6 @@ u64 Tile(const std::vector<u8>& data) {
       if (err < min_err) {
         min_err = err;
         // Lets build this block
-        u64 fhigh = high;
-        fhigh |= static_cast<u64>(table[0] << 29);
-        fhigh |= static_cast<u64>(table[1] << 26);
-        if (i == 1) {
-          fhigh |= 0x1000000;
-        }
         u32 high32 = 0;
         if (diff) {
           high32 |= (table[0] & 0x7) << 29;
