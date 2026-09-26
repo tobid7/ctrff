@@ -9,20 +9,20 @@
 namespace ctrff {
 namespace Pica {
 enum Color : u32 {
-  L8,   // tested
-  A8,   // tested
-  LA4,  // tested
-  LA8,  // tested
-  HILO8,
-  RGB565,  // tested
-  RGB888,  // tested
+  RGBA8888,
+  RGB888,
   RGBA5551,
-  RGBA4444,  // tested
-  RGBA8888,  // tested
+  RGB565,
+  RGBA4444,
+  LA8,
+  HILO8,
+  L8,
+  A8,
+  LA4,
+  L4,
+  A4,
   ETC1,
   ETC1A4,
-  L4,  // tested
-  A4,  // tested
 };
 CTRFF_API void EncodeImage(std::vector<ctrff::u8>& ret,
                            const std::vector<ctrff::u8>& rgba, int w, int h,

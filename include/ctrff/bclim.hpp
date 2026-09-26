@@ -13,20 +13,20 @@ class CTRFF_API BCLIM : public BinFile {
   ~BCLIM() {}
 
   enum Format : u32 {
+    RGBA8888,  // tested
+    RGB888,    // tested
+    RGBA5551,
+    RGB565,    // tested
+    RGBA4444,  // tested
+    LA8,       // tested
+    HILO8,
     L8,   // tested
     A8,   // tested
     LA4,  // tested
-    LA8,  // tested
-    HILO8,
-    RGB565,  // tested
-    RGB888,  // tested
-    RGBA5551,
-    RGBA4444,  // tested
-    RGBA8888,  // tested
+    L4,   // tested
+    A4,   // tested
     ETC1,
     ETC1A4,
-    L4,  // tested
-    A4,  // tested
   };
 
   struct Header {
