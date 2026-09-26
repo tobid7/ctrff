@@ -49,9 +49,9 @@ CTRFF_API void EncodeImage(std::vector<ctrff::u8>& ret,
           ctrff::u8 tmp = rgba[src + 3] >> 4;
           int a4pos = dst >> 1;
           if ((dst & 1) == 0) {
-            ret[a4pos] = (tmp << 4) | (ret[a4pos] & 0x0f);
-          } else {
             ret[a4pos] = (ret[a4pos] & 0xf0) | tmp;
+          } else {
+            ret[a4pos] = (tmp << 4) | (ret[a4pos] & 0x0f);
           }
         }
       }
@@ -82,9 +82,9 @@ CTRFF_API void EncodeImage(std::vector<ctrff::u8>& ret,
                           4;
           int a4pos = dst >> 1;
           if ((dst & 1) == 0) {
-            ret[a4pos] = (tmp << 4) | (ret[a4pos] & 0x0f);
-          } else {
             ret[a4pos] = (ret[a4pos] & 0xf0) | tmp;
+          } else {
+            ret[a4pos] = (tmp << 4) | (ret[a4pos] & 0x0f);
           }
         }
       }
