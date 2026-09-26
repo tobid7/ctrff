@@ -206,7 +206,7 @@ std::vector<u8> Tile(u64 block) {
   return res;
 }
 
-u64 Tile(const std::vector<u8>& data) {
+u64 Tile(u8* data) {
   u64 block;
   int min_err = std::numeric_limits<int>::max();
   for (int i = 0; i < 2; i++) {  // flip check
@@ -369,7 +369,7 @@ void Encode(std::vector<u8>& res, const std::vector<u8>& rgba, int w, int h,
   for (int ty = 0; ty < h; ty += 8) {
     for (int tx = 0; tx < w; tx += 8) {
       for (int t = 0; t < 4; t++) {
-        std::vector<u8> pixels(4 * 4 * 4, 0x0);
+        u8 pixels[64] = {0};
         u64 alpha_block = 0;  // Only in A4
         int idx = 0;
         for (int py = YT[t]; py < 4 + YT[t]; py++) {
