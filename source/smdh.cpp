@@ -102,6 +102,36 @@ CTRFF_API std::string ctrff::SMDH::GetAuthor(Language l) {
   return ctrff::U16toU8(Titles[l].Author, 0x40);
 }
 
+CTRFF_API ctrff::SMDH::Rating ctrff::SMDH::GetRating(Language l) {
+  if (l == Language_All) {
+    return (ctrff::SMDH::Rating)Settings.Ratings[0];
+  }
+  return (ctrff::SMDH::Rating)Settings.Ratings[l];
+}
+
+CTRFF_API void ctrff::SMDH::SetRating(Rating r, Language l) {
+  if (l == Language_All) {
+    for (int i = 0; i < 16; i++) {
+      Settings.Ratings[i] = r;
+    }
+  }
+  Settings.Ratings[l] = r;
+}
+
+CTRFF_API void ctrff::SMDH::SetFlags(Flag flags) { Settings.Flags = flags; }
+
+CTRFF_API void ctrff::SMDH::EnableFlag(Flag flag) { Settings.Flags |= flag; }
+
+CTRFF_API void ctrff::SMDH::DisableFlag(Flag flag) { Settings.Flags &= ~flag; }
+
+CTRFF_API ctrff::SMDH::Flag ctrff::SMDH::GetFlags() {
+  return (ctrff::SMDH::Flag)Settings.Flags;
+}
+
+CTRFF_API bool ctrff::SMDH::IsFlagEnabled(Flag flag) {
+  return Settings.Flags & flag;
+}
+
 CTRFF_API ctrff::SMDH ctrff::SMDH::Default() {
   SMDH n3w; /** new */
   for (int i = 0; i < 4; i++) {

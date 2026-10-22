@@ -115,6 +115,13 @@ struct CTRFF_API SMDH {
   std::string GetShortTitle(Language l = Language_All);
   std::string GetLongTitle(Language l = Language_All);
   std::string GetAuthor(Language l = Language_All);
+  Rating GetRating(Language l = Language_All);
+  void SetRating(Rating r, Language l = Language_All);
+  void SetFlags(Flag flags);
+  void EnableFlag(Flag flag);
+  void DisableFlag(Flag flag);
+  Flag GetFlags();
+  bool IsFlagEnabled(Flag flag);
 
   struct CTRFF_API Title {
     Title() {
