@@ -325,38 +325,38 @@ u64 Tile(u8* data) {
       err += suberr;
       table[s] = bT;
       sectors |= bestSel;
-      if (err < min_err) {
-        min_err = err;
-        // Lets build this block
-        u32 high32 = 0;
-        if (diff) {
-          high32 |= static_cast<u32>(table[0] & 0x7) << 29;
-          high32 |= static_cast<u32>(table[1] & 0x7) << 26;
-          high32 |= 0x1U << 25;
-          if (i == 1) {
-            high32 |= 1U << 24;
-          }
-          high32 |= static_cast<u32>(r1 & 0x1f) << 19;
-          high32 |= static_cast<u32>(g1 & 0x1f) << 11;
-          high32 |= static_cast<u32>(b1 & 0x1f) << 3;
-          high32 |= static_cast<u32>(dr & 0x7) << 16;
-          high32 |= static_cast<u32>(dg & 0x7) << 8;
-          high32 |= static_cast<u32>(db & 0x7) << 0;
-        } else {  // Individual
-          high32 |= static_cast<u32>(table[0] & 0x7) << 29;
-          high32 |= static_cast<u32>(table[1] & 0x7) << 26;
-          if (i == 1) {
-            high32 |= 1U << 24;
-          }
-          high32 |= static_cast<u32>(br1 >> 4) << 20;
-          high32 |= static_cast<u32>(bg1 >> 4) << 12;
-          high32 |= static_cast<u32>(bb1 >> 4) << 4;
-          high32 |= static_cast<u32>(br2 >> 4) << 16;
-          high32 |= static_cast<u32>(bg2 >> 4) << 8;
-          high32 |= static_cast<u32>(bb2 >> 4) << 0;
+    }
+    if (err < min_err) {
+      min_err = err;
+      // Lets build this block
+      u32 high32 = 0;
+      if (diff) {
+        high32 |= static_cast<u32>(table[0] & 0x7) << 29;
+        high32 |= static_cast<u32>(table[1] & 0x7) << 26;
+        high32 |= 0x1U << 25;
+        if (i == 1) {
+          high32 |= 1U << 24;
         }
-        block = (static_cast<u64>(sectors) << 32) | static_cast<u64>(high32);
+        high32 |= static_cast<u32>(r1 & 0x1f) << 19;
+        high32 |= static_cast<u32>(g1 & 0x1f) << 11;
+        high32 |= static_cast<u32>(b1 & 0x1f) << 3;
+        high32 |= static_cast<u32>(dr & 0x7) << 16;
+        high32 |= static_cast<u32>(dg & 0x7) << 8;
+        high32 |= static_cast<u32>(db & 0x7) << 0;
+      } else {  // Individual
+        high32 |= static_cast<u32>(table[0] & 0x7) << 29;
+        high32 |= static_cast<u32>(table[1] & 0x7) << 26;
+        if (i == 1) {
+          high32 |= 1U << 24;
+        }
+        high32 |= static_cast<u32>(br1 >> 4) << 20;
+        high32 |= static_cast<u32>(bg1 >> 4) << 12;
+        high32 |= static_cast<u32>(bb1 >> 4) << 4;
+        high32 |= static_cast<u32>(br2 >> 4) << 16;
+        high32 |= static_cast<u32>(bg2 >> 4) << 8;
+        high32 |= static_cast<u32>(bb2 >> 4) << 0;
       }
+      block = (static_cast<u64>(sectors) << 32) | static_cast<u64>(high32);
     }
   }
   return block;
