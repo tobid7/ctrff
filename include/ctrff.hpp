@@ -1,14 +1,13 @@
 #pragma once
 
-#include <ctrff/3dsx.hpp>
-#include <ctrff/bclan.hpp>
-#include <ctrff/bclim.hpp>
-#include <ctrff/bclyt.hpp>
-#include <ctrff/bcstm.hpp>
-#include <ctrff/bcwav.hpp>
-#include <ctrff/binutil.hpp>
-#include <ctrff/cbmd.hpp>
-#include <ctrff/darc.hpp>
-#include <ctrff/lz11.hpp>
-#include <ctrff/pica.hpp>
-#include <ctrff/smdh.hpp>
+#include <ctrff/compression/lz11.hpp>
+#include <ctrff/files/3dsx.hpp>
+#include <ctrff/files/bclan.hpp>
+#include <ctrff/files/bclim.hpp>
+#include <ctrff/files/bclyt.hpp>
+#include <ctrff/files/bcstm.hpp>
+#include <ctrff/files/bcwav.hpp>
+#include <ctrff/files/cbmd.hpp>
+#include <ctrff/files/darc.hpp>
+#include <ctrff/files/smdh.hpp>
+#include <ctrff/textures/pica.hpp>

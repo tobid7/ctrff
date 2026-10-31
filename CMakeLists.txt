@@ -26,20 +26,20 @@ if(CTRFF_3DS)
 endif()
 
 set(CTRFF_SOURCE
-    source/3dsx.cpp
-    source/bclan.cpp
-    source/bclim.cpp
-    source/bclyt.cpp
-    source/bcstm.cpp
-    source/bcwav.cpp
-    source/binutil.cpp
-    source/cbmd.cpp
-    source/darc.cpp
-    source/etc1.cpp
-    source/helper.cpp
-    source/lz11.cpp
-    source/pica.cpp
-    source/smdh.cpp
+    source/compression/lz11.cpp
+    source/core/binutil.cpp
+    source/core/helper.cpp
+    source/files/3dsx.cpp
+    source/files/bclan.cpp
+    source/files/bclim.cpp
+    source/files/bclyt.cpp
+    source/files/bcstm.cpp
+    source/files/bcwav.cpp
+    source/files/cbmd.cpp
+    source/files/darc.cpp
+    source/files/smdh.cpp
+    source/textures/etc1.cpp
+    source/textures/pica.cpp
 )
 
 if(CTRFF_SHARED)
