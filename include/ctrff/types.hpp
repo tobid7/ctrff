@@ -53,6 +53,7 @@ SOFTWARE.
 #define CTRFF_API
 #endif
 
+#include <array>
 #include <cstddef>
 #include <format>
 #include <fstream>
