@@ -46,3 +46,7 @@ Not all Planned formates are listed here yet
 | darc | Nothing done yet | Done |
 | bclyt | Support for creating startup Logos (needs more research) | |
 | bclan | Support for creating startup Logos (needs more research) | |
+
+## Credits
+
+- [Reference](https://problemkaputt.de/gbatek-contents.htm)
