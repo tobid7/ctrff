@@ -122,54 +122,98 @@ CTRFF_API std::vector<ctrff::u8> Compress(const std::vector<ctrff::u8>& in) {
   return std::vector<u8>(tmp.begin(), tmp.end());
 }
 
-// Baed on
-// https://github.com/Gericom/EveryFileExplorer/blob/master/CommonCompressors/LZ11.cs
-// Needs some fixes cause this code looks very unsafe to me tbh
 CTRFF_API std::vector<ctrff::u8> Decompress(const std::vector<ctrff::u8>& in) {
-  if (!in.size()) {
+  ctrff::MemoryStream ms(in);
+  size_t rd = 0;  // not relevant for this func
+  return DecompressStream(ms, rd);
+}
+
+// Elite API
+
+CTRFF_API std::vector<ctrff::u8> DecompressStream(Stream& stream,
+                                                  size_t& bytes_read) {
+  // Quick setup (and zero out bytes_read / maybe a user forgets to initialize
+  // it as 0)
+  bytes_read = 0;
+  const size_t beg = stream.tellg();
+  const size_t avail = stream.size() > beg ? stream.size() - beg : 0;
+  size_t pos = 0;
+  if (avail == 0) {
     throw std::runtime_error("[ctrff] LZ11: Cannot decompress empty buffer!");
   }
-  if (in[0] != 0x11) {
-    throw std::runtime_error("[ctrff] LZ11: Not a lz11 file!");
-  }
-  u32 len = in[1] | (in[2] << 8) | (in[3] << 16);
-  std::vector<u8> ret(len, 0x0);
-  int off = 4;
-  int dst_off = 0;
-  while (true) {
-    u8 header = in[off++];
-    for (int i = 0; i < 8; i++) {
-      if ((header & 0x80) == 0) {
-        ret[dst_off++] = in[off++];
-      } else {
-        u8 a = in[off++];
-        int off2;
-        int length;
-        if ((a >> 4) == 0) {
-          u8 b = in[off++];
-          u8 c = in[off++];
-          length = (((a & 0xF) << 4) | (b >> 4)) + 0x11;
-          off2 = (((b & 0xF) << 8) | c) + 1;
-        } else if ((a >> 4) == 1) {
-          u8 b = in[off++];
-          u8 c = in[off++];
-          u8 d = in[off++];
-          length = (((a & 0xF) << 12) | (b << 4) | (c >> 4)) + 0x111;
-          off2 = (((c & 0xF) << 8) | d) + 1;
-        } else {
-          u8 b = in[off++];
-          off2 = (((a & 0xF) << 8) | b) + 1;
-          length = (a >> 4) + 1;
-        }
-        for (int j = 0; j < length; j++) {
-          ret[dst_off] = ret[dst_off - off2];
-          dst_off++;
-        }
-      }
-      if ((u32)dst_off >= len) return ret;
-      header <<= 1;
+  // Functional stuff
+  // read byte
+  auto rb = [&](u8& v) -> bool {
+    if (pos >= avail) return false;
+    char c;
+    stream.read(&c, 1);
+    v = static_cast<u8>(c);
+    pos++;
+    return true;
+  };
+  // read header and setup expected result size
+  u8 hdr[4] = {0};
+  for (int i = 0; i < 4; i++) {
+    if (!rb(hdr[i])) {
+      throw std::runtime_error("[ctrff] LZ11: Truncated header!");
     }
   }
+  if (hdr[0] != 0x11) {
+    throw std::runtime_error("[ctrff] LZ11: Not a lz11 file!");
+  }
+
+  const size_t len = hdr[1] | (hdr[2] << 8) | (hdr[3] << 16);
+  std::vector<u8> ret(len, 0x0);
+  size_t dst_off = 0;
+  // pack everything into a func to escape with early return
+  // This way we can keep the DecompressStream alive to return whatever we got
+  // as data.
+  auto run = [&]() {
+    while (true) {
+      u8 header;
+      if (!rb(header)) return;
+      for (int i = 0; i < 8; i++) {
+        if ((header & 0x80) == 0) {
+          u8 v;
+          if (!rb(v)) return;
+          if (dst_off < len) ret[dst_off] = v;
+          dst_off++;
+        } else {
+          u8 a, b, c, d;
+          size_t off2, length;
+          if (!rb(a)) return;
+          if ((a >> 4) == 0) {
+            if (!rb(b) || !rb(c)) return;
+            length = (((a & 0xF) << 4) | (b >> 4)) + 0x11;
+            off2 = (((b & 0xF) << 8) | c) + 1;
+          } else if ((a >> 4) == 1) {
+            if (!rb(b) || !rb(c) || !rb(d)) return;
+            length = (((a & 0xF) << 12) | (b << 4) | (c >> 4)) + 0x111;
+            off2 = (((c & 0xF) << 8) | d) + 1;
+          } else {
+            if (!rb(b)) return;
+            off2 = (((a & 0xF) << 8) | b) + 1;
+            length = (a >> 4) + 1;
+          }
+          for (size_t j = 0; j < length; j++) {
+            if (dst_off < len) {
+              if (off2 > dst_off) {
+                throw std::runtime_error(
+                    "[ctrff] LZ11: Underflow in decompress");
+              }
+              ret[dst_off] = ret[dst_off - off2];
+            }
+            dst_off++;
+          }
+        }
+        if (dst_off >= len) return;
+        header <<= 1;
+      }
+    }
+  };
+  run();
+  bytes_read = pos;
+  return ret;
 }
 }  // namespace LZ11
 }  // namespace ctrff
