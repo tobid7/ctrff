@@ -16,7 +16,7 @@ namespace ctrff {
 // a sizeof(SMDH) will not return the expected size due to
 // use of Serializable)
 constexpr ctrff::u32 SMDH_Size = 0x36C0;
-struct CTRFF_API SMDH {
+struct CTRFF_API SMDH : public BinFile {
   SMDH() {
     std::fill_n(Magic, ctrff::ArraySize(Magic), 0);
     std::fill_n(IconSmall, ctrff::ArraySize(IconSmall), 0);
@@ -80,32 +80,8 @@ struct CTRFF_API SMDH {
     Flag_DEFAULT = Flag_VISIBLE | Flag_ALLOW_3D | Flag_RECORD_USAGE,
   };
 
-  void Load(const std::string& path) {
-    FileStream f(path, std::ios::in | std::ios::binary);
-    Read(f);
-    f.close();
-  }
-
-  void Load(const std::vector<u8>& data) {
-    MemoryStream ms(data);
-    Read(ms);
-    ms.close();
-  }
-
-  void Save(const std::string& path) {
-    FileStream f(path, std::ios::out | std::ios::binary);
-    Write(f);
-    f.close();
-  }
-
-  void Save(std::vector<u8>& ret) {
-    MemoryStream ms(ret);
-    Write(ms);
-    ms.close();
-  }
-
-  void Write(Stream& f) const;
-  void Read(Stream& f);
+  void Write(Stream& f) const override;
+  void Read(Stream& f) override;
 
   void SetIcon(const std::vector<ctrff::u8>& buf);
   std::vector<ctrff::u8> GetIcon();

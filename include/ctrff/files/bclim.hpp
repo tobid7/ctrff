@@ -68,28 +68,6 @@ class CTRFF_API BCLIM : public BinFile {
     u32 ImageSize;
   };
 
-  void Load(const std::string& path) {
-    FileStream f(path, std::ios::in | std::ios::binary);
-    Read(f);
-    f.close();
-  }
-
-  void Load(const std::vector<u8>& mem) {
-    MemoryStream ms(mem);
-    Read(ms);
-  }
-
-  void Save(const std::string& path) {
-    FileStream f(path, std::ios::out | std::ios::binary);
-    Write(f);
-    f.close();
-  }
-
-  void Save(std::vector<u8>& mem) {
-    MemoryStream ms(mem);
-    Write(ms);
-  }
-
   void CreateByImage(const std::vector<u8>& data, int w, int h, Format fmt);
 
   Format GetFmt() const { return (Format)pImag.Format; }

@@ -29,12 +29,6 @@ class CTRFF_API BcLan : public BinFile {
   BcLan() { pHeader = Header::Default(); }
   ~BcLan() {}
 
-  void Save(const std::string& path) {
-    FileStream f(path, std::ios::out | std::ios::binary);
-    Write(f);
-    f.close();
-  }
-
   void Write(Stream& f) const override;
   void Read(Stream& f) override {}
 

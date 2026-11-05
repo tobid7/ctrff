@@ -22,31 +22,20 @@ class CTRFF_API Darc : public BinFile {
     u32 DataSize = 0;
   };
 
-  void Load(const std::string& path) {
+  void Load(const std::string& path) override {
     pStream = new FileStream(path, std::ios::in | std::ios::binary);
     Read(*pStream);
     pStream->close();
     pLoadedFilePath = path;
   }
 
-  void Load(std::vector<u8> mem) {
+  void Load(const std::vector<u8>& mem) override {
     // taking mem for not going out of scope
     pMemBuf = std::move(mem);
     pStream = new MemoryStream(pMemBuf);
     Read(*pStream);
     // just something telling ExtractTo we are in loading mode
     pLoadedFilePath = "<mem>";
-  }
-
-  void Save(const std::string& path) {
-    FileStream f(path, std::ios::out | std::ios::binary);
-    Write(f);
-    f.close();
-  }
-
-  void Save(std::vector<u8>& mem) {
-    MemoryStream ms(mem);
-    Write(ms);
   }
 
   void Write(Stream& f) const override;

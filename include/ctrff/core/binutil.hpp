@@ -8,6 +8,28 @@ class BinFile {
   BinFile() = default;
   ~BinFile() = default;
 
+  virtual void Load(const std::string& path) {
+    FileStream f(path, std::ios::in | std::ios::binary);
+    Read(f);
+    f.close();
+  }
+
+  virtual void Load(const std::vector<u8>& mem) {
+    MemoryStream ms(mem);
+    Read(ms);
+  }
+
+  virtual void Save(const std::string& path) {
+    FileStream f(path, std::ios::out | std::ios::binary);
+    Write(f);
+    f.close();
+  }
+
+  virtual void Save(std::vector<u8>& mem) {
+    MemoryStream ms(mem);
+    Write(ms);
+  }
+
   virtual void Write(Stream& s) const = 0;
   virtual void Read(Stream& s) = 0;
 };

@@ -10,11 +10,6 @@ class CTRFF_API _3dsx : public BinFile {
   _3dsx() {}
   ~_3dsx() {}
 
-  void Load(const std::string& path) {
-    FileStream f(path, std::ios::in | std::ios::binary);
-    Read(f);
-  }
-
   bool HasMeta() { return SMDHSize == SMDH_Size; }
 
   /** Write not supported btw */

@@ -31,28 +31,6 @@ class CTRFF_API CBMD : public BinFile {
     u32 CwavOffset;
   };
 
-  void Load(const std::string& path) {
-    FileStream f(path, std::ios::in | std::ios::binary);
-    Read(f);
-    f.close();
-  }
-
-  void Load(const std::vector<u8>& mem) {
-    MemoryStream ms(mem);
-    Read(ms);
-  }
-
-  void Save(const std::string& path) {
-    FileStream f(path, std::ios::out | std::ios::binary);
-    Write(f);
-    f.close();
-  }
-
-  void Save(std::vector<u8>& mem) {
-    MemoryStream ms(mem);
-    Write(ms);
-  }
-
   void Write(Stream& f) const override;
   void Read(Stream& f) override;
 
