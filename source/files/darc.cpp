@@ -166,7 +166,7 @@ void Darc::Read(Stream& f) {
   }
 
   SetEndianess(h.Endianness == 0xFFFE);
-  f.seekg(std::ios::beg, 0);
+  f.seekg(0, std::ios::beg);
   ReadT(f, h);
 
   f.seekg(h.TableOffset, std::ios::beg);
