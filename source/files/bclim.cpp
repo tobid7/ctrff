@@ -3,18 +3,9 @@
 namespace ctrff {
 CTRFF_API void BCLIM::Write(Stream& f) const {
   f.write(reinterpret_cast<const char*>(pBuffer.data()), pBuffer.size());
-  f.write((const char*)&pCurrent.Magic, sizeof(pCurrent.Magic));
-  f.write((const char*)&pCurrent.Endianness, sizeof(pCurrent.Endianness));
-  f.write((const char*)&pCurrent.HeaderSize, sizeof(pCurrent.HeaderSize));
-  f.write((const char*)&pCurrent.Version, sizeof(pCurrent.Version));
-  f.write((const char*)&pCurrent.FileSize, sizeof(pCurrent.FileSize));
-  f.write((const char*)&pCurrent.NumSections, sizeof(pCurrent.NumSections));
-  f.write((const char*)&pImag.Magic, sizeof(pImag.Magic));
-  f.write((const char*)&pImag.HeaderSize, sizeof(pImag.HeaderSize));
-  f.write((const char*)&pImag.Width, sizeof(pImag.Width));
-  f.write((const char*)&pImag.Height, sizeof(pImag.Height));
-  f.write((const char*)&pImag.Format, sizeof(pImag.Format));
-  f.write((const char*)&pImag.ImageSize, sizeof(pImag.ImageSize));
+  SetEndianess(pCurrent.Endianness == 0xfffe);
+  WriteT(f, pCurrent);
+  WriteT(f, pImag);
 }
 
 CTRFF_API void BCLIM::Read(Stream& f) {
@@ -23,8 +14,8 @@ CTRFF_API void BCLIM::Read(Stream& f) {
     throw std::runtime_error("Invalid File!");
   }
   f.seekg(size - sizeof(Header) - sizeof(ImagHeader));
-  f.read(reinterpret_cast<char*>(&pCurrent), sizeof(pCurrent));
-  f.read(reinterpret_cast<char*>(&pImag), sizeof(pImag));
+  ReadT(f, pCurrent);
+  ReadT(f, pImag);
   if (pCurrent.Magic != 0x4d494c43) {
     throw std::runtime_error("[ctrff] BCLIM: Not a bclim file!");
   }

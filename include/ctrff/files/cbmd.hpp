@@ -24,6 +24,16 @@ class CTRFF_API CBMD : public BinFile {
       h.CwavOffset = 0;
       return h;
     }
+
+    template <class Self, class F>
+    static void Visit(Self& s, F&& f) {
+      f(s.Magic);
+      f(s.Zero);
+      f(s.Offsets);
+      f(s.Padding);
+      f(s.CwavOffset);
+    }
+
     u32 Magic;  // 0x4d494c43 "CLIM"
     u32 Zero;
     u32 Offsets[0xe];

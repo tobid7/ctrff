@@ -8,7 +8,7 @@ CTRFF_API void CBMD::Read(Stream& f) {
   if (size < sizeof(Header)) {
     throw std::runtime_error("Invalid File!");
   }
-  f.read(reinterpret_cast<char*>(&pHeader), sizeof(Header));
+  ReadT(f, pHeader);
   if (pHeader.Magic != 0x444d4243) {
     throw std::runtime_error("[ctrff] CBMD: Not a banner file!");
   }

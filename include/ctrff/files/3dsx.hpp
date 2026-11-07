@@ -35,6 +35,26 @@ class CTRFF_API _3dsx : public BinFile {
   // fs offset
   ctrff::u32 FsOff;
   SMDH Meta;
+
+  template <class Self, class F>
+  static void Visit(Self& s, F&& f) {
+    f(s.Magic);
+    f(s.HeaderSize);
+    f(s.RelocHeaderSize);
+    f(s.FormatVersion);
+    f(s.Flags);
+    f(s.CodeSegSize);
+    f(s.RodataSegSize);
+    f(s.DataSegSize);
+    f(s.BssSize);
+  }
+
+  template <class Self, class F>
+  static void VisitExt(Self& s, F&& f) {
+    f(s.SMDHOff);
+    f(s.SMDHSize);
+    f(s.FsOff);
+  }
 };
 /** Probably only germen people will understand */
 using DreiDSX = _3dsx;

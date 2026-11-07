@@ -17,6 +17,14 @@ class CTRFF_API Darc : public BinFile {
     std::string FsPath;
     bool IsDir;
 
+    // Use them to write in exact same size as TableEntry
+    template <class Self, class F>
+    static void Visit(Self& s, F&& f) {
+      f(s.NameOffset);
+      f(s.DataOffset);
+      f(s.DataSize);
+    }
+
     u32 NameOffset = 0;
     u32 DataOffset = 0;
     u32 DataSize = 0;
@@ -59,6 +67,19 @@ class CTRFF_API Darc : public BinFile {
       h.FileSize = 0x0;
       return h;
     }
+
+    template <class Self, class F>
+    static void Visit(Self& s, F&& f) {
+      f(s.Magic);
+      f(s.Endianness);
+      f(s.HeaderSize);
+      f(s.Version);
+      f(s.FileSize);
+      f(s.TableOffset);
+      f(s.TableSize);
+      f(s.DataOffset);
+    }
+
     u32 Magic;  // 0x63726164 "darc"
     u16 Endianness;
     u16 HeaderSize;
@@ -75,6 +96,14 @@ class CTRFF_API Darc : public BinFile {
       Offset = 0;
       Size = 0;
     }
+
+    template <class Self, class F>
+    static void Visit(Self& s, F&& f) {
+      f(s.FileNameOffset);
+      f(s.Offset);
+      f(s.Size);
+    }
+
     u32 FileNameOffset;
     u32 Offset;
     u32 Size;

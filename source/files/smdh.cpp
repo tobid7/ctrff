@@ -4,42 +4,16 @@
 // magic
 static const std::string smdh_magic = "SMDH";
 
-CTRFF_API void ctrff::SMDH::Write(Stream &f) const {
-  f.write(reinterpret_cast<const char *>(Magic), sizeof(Magic));
-  f.write(reinterpret_cast<const char *>(&Version), sizeof(Version));
-  f.write(reinterpret_cast<const char *>(&Reserved), sizeof(Reserved));
-  for (size_t i = 0; i < 16; i++) {
-    f.write(reinterpret_cast<const char *>(&Titles[i]), sizeof(Title));
-  }
-  f.write(reinterpret_cast<const char *>(&Settings), sizeof(Settings));
-  f.write(reinterpret_cast<const char *>(&Reserved1), sizeof(Reserved1));
-  f.write(reinterpret_cast<const char *>(&IconSmall), sizeof(IconSmall));
-  f.write(reinterpret_cast<const char *>(&IconLarge), sizeof(IconLarge));
-}
+CTRFF_API void ctrff::SMDH::Write(Stream& f) const { WriteT(f, *this); }
 
-CTRFF_API void ctrff::SMDH::Read(Stream &f) {
-  /*f.seekg(0, std::ios::end);
-  if (f.tellg() != SMDH_Size) {
-    throw std::runtime_error(
-        "SMDH: File size does not match the SMDH Header size!");
-  }
-  f.seekg(0, std::ios::beg);*/
-  f.read(reinterpret_cast<char *>(Magic), sizeof(Magic));
-  if (std::string(Magic) != smdh_magic) {
+CTRFF_API void ctrff::SMDH::Read(Stream& f) {
+  ReadT(f, *this);
+  if (std::string(Magic, 4) != smdh_magic) {
     throw std::runtime_error("SMDH: Invalid SMDH file!");
   }
-  f.read(reinterpret_cast<char *>(&Version), sizeof(Version));
-  f.read(reinterpret_cast<char *>(&Reserved), sizeof(Reserved));
-  for (size_t i = 0; i < 16; i++) {
-    f.read(reinterpret_cast<char *>(&Titles[i]), sizeof(Title));
-  }
-  f.read(reinterpret_cast<char *>(&Settings), sizeof(Settings));
-  f.read(reinterpret_cast<char *>(&Reserved1), sizeof(Reserved1));
-  f.read(reinterpret_cast<char *>(&IconSmall), sizeof(IconSmall));
-  f.read(reinterpret_cast<char *>(&IconLarge), sizeof(IconLarge));
 }
 
-CTRFF_API void ctrff::SMDH::SetIcon(const std::vector<ctrff::u8> &buf) {
+CTRFF_API void ctrff::SMDH::SetIcon(const std::vector<ctrff::u8>& buf) {
   RGBA2RGB565(IconLarge, buf, 48, 48);
   auto small_icon = DownscaleImage(buf, 48, 48, 2);
   RGBA2RGB565(IconSmall, small_icon, 24, 24);
@@ -51,7 +25,7 @@ CTRFF_API std::vector<ctrff::u8> ctrff::SMDH::GetIcon() {
   return res;
 }
 
-CTRFF_API void ctrff::SMDH::SetShortTitle(const std::string &t, Language l) {
+CTRFF_API void ctrff::SMDH::SetShortTitle(const std::string& t, Language l) {
   if (l == Language_All) {
     for (int i = 0; i < 16; i++) {
       ctrff::String2U16(Titles[i].ShortTitle, t, 0x40);
@@ -61,7 +35,7 @@ CTRFF_API void ctrff::SMDH::SetShortTitle(const std::string &t, Language l) {
   ctrff::String2U16(Titles[l].ShortTitle, t, 0x40);
 }
 
-CTRFF_API void ctrff::SMDH::SetLongTitle(const std::string &t, Language l) {
+CTRFF_API void ctrff::SMDH::SetLongTitle(const std::string& t, Language l) {
   if (l == Language_All) {
     for (int i = 0; i < 16; i++) {
       ctrff::String2U16(Titles[i].LongTitle, t, 0x80);
@@ -71,7 +45,7 @@ CTRFF_API void ctrff::SMDH::SetLongTitle(const std::string &t, Language l) {
   ctrff::String2U16(Titles[l].LongTitle, t, 0x80);
 }
 
-CTRFF_API void ctrff::SMDH::SetAuthor(const std::string &t, Language l) {
+CTRFF_API void ctrff::SMDH::SetAuthor(const std::string& t, Language l) {
   if (l == Language_All) {
     for (int i = 0; i < 16; i++) {
       ctrff::String2U16(Titles[i].Author, t, 0x40);

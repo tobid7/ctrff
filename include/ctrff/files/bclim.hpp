@@ -41,6 +41,17 @@ class CTRFF_API BCLIM : public BinFile {
       h.NumSections = 0;
       return h;
     }
+
+    template <class Self, class F>
+    static void Visit(Self& s, F&& f) {
+      f(s.Magic);
+      f(s.Endianness);
+      f(s.HeaderSize);
+      f(s.Version);
+      f(s.FileSize);
+      f(s.NumSections);
+    }
+
     u32 Magic;  // 0x4d494c43 "CLIM"
     u16 Endianness;
     u16 HeaderSize;
@@ -60,6 +71,17 @@ class CTRFF_API BCLIM : public BinFile {
       h.ImageSize = 0;
       return h;
     }
+
+    template <class Self, class F>
+    static void Visit(Self& s, F&& f) {
+      f(s.Magic);
+      f(s.HeaderSize);
+      f(s.Width);
+      f(s.Height);
+      f(s.Format);
+      f(s.ImageSize);
+    }
+
     u32 Magic;  // 0x67616d69 "imag"
     u32 HeaderSize;
     u16 Width;

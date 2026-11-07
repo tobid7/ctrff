@@ -106,6 +106,13 @@ struct CTRFF_API SMDH : public BinFile {
       std::fill_n(Author, ctrff::ArraySize(Author), 0);
     };
 
+    template <class Self, class F>
+    static void Visit(Self& s, F&& f) {
+      f(s.ShortTitle);
+      f(s.LongTitle);
+      f(s.Author);
+    }
+
     ctrff::u16 ShortTitle[0x40];
     ctrff::u16 LongTitle[0x80];
     ctrff::u16 Author[0x40];
@@ -113,6 +120,19 @@ struct CTRFF_API SMDH : public BinFile {
 
   struct CTRFF_API Settings {
     Settings() { std::fill_n(Ratings, ctrff::ArraySize(Ratings), 0); };
+    template <class Self, class F>
+    static void Visit(Self& s, F&& f) {
+      f(s.Ratings);
+      f(s.RegionLock);
+      f(s.MatchmakerID);
+      f(s.MatchmakerBitID);
+      f(s.Flags);
+      f(s.EulaVersion);
+      f(s.Reserved);
+      f(s.OptimalBannerFrame);
+      f(s.StreetpassID);
+    }
+
     ctrff::u8 Ratings[16];
     ctrff::u32 RegionLock = 0;
     ctrff::u32 MatchmakerID = 0;
@@ -132,5 +152,17 @@ struct CTRFF_API SMDH : public BinFile {
   ctrff::u64 Reserved1 = 0;
   ctrff::u16 IconSmall[0x240];  // 24x24
   ctrff::u16 IconLarge[0x900];  // 48x48
+
+  template <class Self, class F>
+  static void Visit(Self& s, F&& f) {
+    f(s.Magic);
+    f(s.Version);
+    f(s.Reserved);
+    f(s.Titles);
+    f(s.Settings);
+    f(s.Reserved1);
+    f(s.IconSmall);
+    f(s.IconLarge);
+  }
 };
 }  // namespace ctrff

@@ -53,8 +53,11 @@ SOFTWARE.
 #define CTRFF_API
 #endif
 
+#include <algorithm>
 #include <array>
+#include <bit>
 #include <cstddef>
+#include <cstring>
 #include <format>
 #include <fstream>
 #include <iostream>
@@ -63,6 +66,7 @@ SOFTWARE.
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 namespace ctrff {

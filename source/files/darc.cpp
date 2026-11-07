@@ -117,30 +117,20 @@ void Darc::Write(Stream& f) const {
   h.DataOffset = pDataOffsetBase;
   h.FileSize = pTotalFileSize;
 
-  BinUtil u(f);
-  u.SetEndianess(h.Endianness == 0xFFFE);
-  u.Write(h.Magic);
-  u.Write(h.Endianness);
-  u.Write(h.HeaderSize);
-  u.Write(h.Version);
-  u.Write(h.FileSize);
-  u.Write(h.TableOffset);
-  u.Write(h.TableSize);
-  u.Write(h.DataOffset);
+  SetEndianess(h.Endianness == 0xFFFE);
+  WriteT(f, h);
 
   // Table
   for (const auto& entry : pEntries) {
-    u.Write(entry.NameOffset);
-    u.Write(entry.DataOffset);
-    u.Write(entry.DataSize);
+    WriteT(f, entry);
   }
 
   // Stringtable
   for (const auto& entry : pEntries) {
     for (char16_t c : entry.Name) {
-      u.Write(static_cast<u16>(c));
+      WriteT(f, static_cast<u16>(c));
     }
-    u.Write(static_cast<u16>(0));
+    WriteT(f, static_cast<u16>(0));
   }
 
   // Insert padding
@@ -167,39 +157,28 @@ void Darc::Write(Stream& f) const {
 
 void Darc::Read(Stream& f) {
   pEntries.clear();
-  BinUtil u(f);
 
   Header h;
-  u.Read(h.Magic);
-  u.Read(h.Endianness);
-
+  ReadT(f, h);
   // check for both variants
   if (h.Magic != 0x63726164 && h.Magic != 0x64617263) {
     throw std::runtime_error("[ctrff] DARC: Invalid magic number!");
   }
 
-  u.SetEndianess(h.Endianness == 0xFFFE);
-  u.Read(h.HeaderSize);
-  u.Read(h.Version);
-  u.Read(h.FileSize);
-  u.Read(h.TableOffset);
-  u.Read(h.TableSize);
-  u.Read(h.DataOffset);
+  SetEndianess(h.Endianness == 0xFFFE);
+  f.seekg(std::ios::beg, 0);
+  ReadT(f, h);
 
   f.seekg(h.TableOffset, std::ios::beg);
   TableEntry first_entry;
-  u.Read(first_entry.FileNameOffset);
-  u.Read(first_entry.Offset);
-  u.Read(first_entry.Size);
+  ReadT(f, first_entry);
 
   u32 total_entries = first_entry.Size;
 
   std::vector<TableEntry> raw_entries(total_entries);
   f.seekg(h.TableOffset, std::ios::beg);
   for (u32 i = 0; i < total_entries; i++) {
-    u.Read(raw_entries[i].FileNameOffset);
-    u.Read(raw_entries[i].Offset);
-    u.Read(raw_entries[i].Size);
+    ReadT(f, raw_entries[i]);
   }
 
   u32 string_table_offset =
@@ -211,7 +190,7 @@ void Darc::Read(Stream& f) {
   f.seekg(string_table_offset, std::ios::beg);
   for (u32 i = 0; i < string_count; i++) {
     u16 c;
-    u.Read(c);
+    ReadT(f, c);
     string_table[i] = static_cast<char16_t>(c);
   }
 

@@ -19,6 +19,17 @@ class CTRFF_API BcLyt : public BinFile {
       h.NumSections = 0;
       return h;
     }
+
+    template <class Self, class F>
+    static void Visit(Self& s, F&& f) {
+      f(s.Magic);
+      f(s.Endianness);
+      f(s.HeaderSize);
+      f(s.Version);
+      f(s.FileSize);
+      f(s.NumSections);
+    }
+
     u32 Magic;
     u16 Endianness;
     u16 HeaderSize;
