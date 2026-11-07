@@ -21,7 +21,12 @@ u32 Darc::AddDirectory(const std::string& path) {
       pEntries[idx].DataSize = idx + 1 + childs;
       entries += 1 + childs;
     } else if (it.is_regular_file()) {
-      u32 fsize = std::filesystem::file_size(it.path());
+      u64 fsize64 = std::filesystem::file_size(it.path());
+      if (fsize64 > 0xFFFFFFFFull) {
+        throw std::runtime_error("[ctrff] DARC: File exceeds 4GB limit: " +
+                                 it.path().string());
+      }
+      u32 fsize = static_cast<u32>(fsize64);
       pEntries.push_back({name16, it.path().string(), false, 0, 0, fsize});
       entries += 1;
     }
@@ -76,9 +81,9 @@ CTRFF_API void Darc::BuildFromDirectory(const std::string& path) {
       (pEntries.size() * sizeof(TableEntry)) + string_table_bytes;
 
   table_byte_size = (table_byte_size + 3) & ~3;
-  u32 filedata_offset = 0x1C + table_byte_size;
+  u64 filedata_offset = 0x1C + table_byte_size;
 
-  u32 tmp = filedata_offset & 0x1F;
+  u64 tmp = filedata_offset & 0x1F;
   if (tmp) {
     table_byte_size += 0x20 - tmp;
     filedata_offset += 0x20 - tmp;
@@ -95,7 +100,7 @@ CTRFF_API void Darc::BuildFromDirectory(const std::string& path) {
       // force 0x80 alignment for GPU textures
       if (entry.FsPath.length() >= 6 &&
           entry.FsPath.substr(entry.FsPath.length() - 6) == ".bclim") {
-        filedata_offset = (filedata_offset + 0x7F) & ~0x7F;
+        filedata_offset = (filedata_offset + 0x7F) & ~0x7FULL;
       }
 
       entry.DataOffset = filedata_offset;
@@ -103,8 +108,12 @@ CTRFF_API void Darc::BuildFromDirectory(const std::string& path) {
 
       // 0x20 padding for everything else
       if (i != pEntries.size() - 1) {
-        filedata_offset = (filedata_offset + 0x1F) & ~0x1F;
+        filedata_offset = (filedata_offset + 0x1F) & ~0x1FULL;
       }
+    }
+
+    if (filedata_offset > 0xFFFFFFFFull) {
+      throw std::runtime_error("[ctrff] DARC: Archive exceeds 4GB limit!");
     }
   }
 
@@ -134,7 +143,7 @@ void Darc::Write(Stream& f) const {
   }
 
   // Insert padding
-  while (static_cast<u32>(f.tellp()) < h.DataOffset) {
+  while (static_cast<u64>(f.tellp()) < h.DataOffset) {
     char pad = 0;
     f.write(&pad, 1);
   }
@@ -142,14 +151,27 @@ void Darc::Write(Stream& f) const {
   // Write files and padding
   for (const auto& entry : pEntries) {
     if (!entry.IsDir) {
-      while (static_cast<u32>(f.tellp()) < entry.DataOffset) {
+      while (static_cast<u64>(f.tellp()) < entry.DataOffset) {
         char pad = 0;
         f.write(&pad, 1);
       }
 
       std::ifstream in(entry.FsPath, std::ios::binary);
       if (in) {
-        f << in;
+        std::vector<char> buf(1 << 20);
+        u64 tbw = entry.DataSize;
+        while (tbw > 0 && in) {
+          u64 tw = std::min<u64>(tbw, buf.size());
+          in.read(buf.data(), tw);
+          std::streamsize w = in.gcount();
+          if (w <= 0) break;
+          f.write(buf.data(), w);
+          tbw -= w;
+        }
+      }
+
+      if (static_cast<u64>(f.tellp()) > 0xFFFFFFFFull) {
+        throw std::runtime_error("[ctrff] DARC: Write exceeded 4GB limit!");
       }
     }
   }
