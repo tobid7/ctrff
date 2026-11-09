@@ -10,7 +10,12 @@ namespace ctrff {
 class CTRFF_API Darc : public BinFile {
  public:
   Darc() {}
-  ~Darc() {}
+  ~Darc() {
+    if (pStream) {
+      delete pStream;
+      pStream = nullptr;
+    }
+  }
 
   struct DarcNode {
     std::u16string Name;
@@ -31,6 +36,9 @@ class CTRFF_API Darc : public BinFile {
   };
 
   void Load(const std::string& path) override {
+    if (pStream) {
+      delete pStream;
+    }
     pStream = new FileStream(path, std::ios::in | std::ios::binary);
     Read(*pStream);
     pStream->close();
@@ -38,6 +46,9 @@ class CTRFF_API Darc : public BinFile {
   }
 
   void Load(const std::vector<u8>& mem) override {
+    if (pStream) {
+      delete pStream;
+    }
     // taking mem for not going out of scope
     pMemBuf = std::move(mem);
     pStream = new MemoryStream(pMemBuf);
