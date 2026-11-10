@@ -86,7 +86,7 @@ CTRFF_API void BCSTM::ReadInfoBlock(Stream& f, InfoBlock& block) {
     ReadT(f, r);
     block.ChannelInfoRefs.push_back(r);
   }
-  if (block.StreamInfo.Encoding == DSP_ADPCM) {
+  if (block.StreamInfo.Encoding == Encoding::DSP_ADPCM) {
     SetEndianess(false);  // little endian
     for (size_t i = 0; i < block.ChannelInfoRefs.size(); i++) {
       size_t off = pInfoBlockRef.Ref.Offset;

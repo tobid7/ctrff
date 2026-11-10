@@ -2,24 +2,23 @@
 
 #include <ctrff/core/binutil.hpp>
 #include <ctrff/core/types.hpp>
+#include <ctrff/shared/sound.hpp>
 
 namespace ctrff {
-class CTRFF_API BCWAV {
+class CTRFF_API BCWAV : public BinFile {
  public:
-  BCWAV() : pReader(pFile) {}
+  BCWAV() : pReader(pFile), BinFile(true) {}
   ~BCWAV() { CleanUp(); }
+
+  void Write(Stream& f) const override;
+  void Read(Stream& f) override;
 
   void LoadFile(const std::string& path);
   void CleanUp();
   void ReadGotoBeginning(bool use_loop_beg = false);
   void ReadBlock(ctrff::u32 block, ctrff::u8* ref);
 
-  /** Internal Data (can be made private with private: but public by default) */
-  enum Endianness : ctrff::u16 {
-    Big = 0xfffe,     ///< Big Endian
-    Little = 0xfeff,  ///< Little Endian
-  };
-
+  using Endianess = shared::sound::Endianness;
   enum ReferenceTypes : ctrff::u16 {
     Ref_DSP_ADPCM_Info = 0x0300,
     Ref_IMA_ADPCM_Info = 0x0301,
@@ -29,38 +28,11 @@ class CTRFF_API BCWAV {
     Ref_ChannelInfo = 0x7100,
   };
 
-  enum Encoding : ctrff::u8 {
-    PCM8 = 0,
-    PCM16 = 1,
-    /** Only supported encoding in BCSTM-Player */
-    DSP_ADPCM = 2,
-    IMA_ADPCM = 3,
-  };
-
-  struct Reference {
-    Reference() : TypeID(0), Padding(0), Offset(0) {}
-    ctrff::u16 TypeID;
-    ctrff::u16 Padding;
-    ctrff::u32 Offset; /** null -> uint32_max */
-  };
-
-  struct ReferenceTable {
-    ReferenceTable() : Count(0) {}
-    ctrff::u32 Count;
-    std::vector<Reference> Refs;
-  };
-
-  struct SizedReference {
-    SizedReference() : Size(0) {}
-    Reference Ref;
-    ctrff::u32 Size;
-  };
-
-  struct BlockHeader {
-    BlockHeader() : Magic(0), Size(0) {}
-    ctrff::u32 Magic;
-    ctrff::u32 Size;
-  };
+  using Encoding = shared::sound::Encoding;
+  using Reference = shared::sound::Reference;
+  using SizedReference = shared::sound::SizedReference;
+  using ReferenceTable = shared::sound::ReferenceTable;
+  using BlockHeader = shared::sound::BlockHeader;
 
   struct InfoBlock {
     InfoBlock()
@@ -94,45 +66,26 @@ class CTRFF_API BCWAV {
     std::vector<ctrff::u8> Data;
   };
 
-  struct DSP_ADPCM_Param {
-    ctrff::u16 Coefficients[0x10];
-  };
-  struct DSP_ADPCM_Context {
-    DSP_ADPCM_Context()
-        : PredictorScale(0),
-          Reserved(0),
-          PreviousSample(0),
-          SecondPreviousSample(0) {}
-    ctrff::u8 PredictorScale;
-    ctrff::u8 Reserved;
-    ctrff::u16 PreviousSample;
-    ctrff::u16 SecondPreviousSample;
-  };
-
-  struct DSP_ADPCM_Info {
-    DSP_ADPCM_Info() : Padding(0) {}
-    DSP_ADPCM_Param Param;
-    DSP_ADPCM_Context Context;
-    DSP_ADPCM_Context LoopContext;
-    ctrff::u16 Padding;
-  };
+  using DSP_ADPCM_Param = shared::sound::DSP_ADPCM_Param;
+  using DSP_ADPCM_Context = shared::sound::DSP_ADPCM_Context;
+  using DSP_ADPCM_Info = shared::sound::DSP_ADPCM_Info;
 
   struct Header {
     Header()
         : Magic(0),
-          Endianness(Little),
+          Endianness(Endianess::Little),
           HeaderSize(0),
           Version(0),
           FileSize(0),
           NumBlocks(0),
           Reserved(0) {}
-    ctrff::u32 Magic;               /** CWAV */
-    ctrff::u16 Endianness = Little; /** Default */
-    ctrff::u16 HeaderSize;          /** Header Size probably */
-    ctrff::u32 Version;             /** Format Version? */
-    ctrff::u32 FileSize;            /** File Size */
-    ctrff::u16 NumBlocks;           /** Number of blocks */
-    ctrff::u16 Reserved;            /** Reserved */
+    ctrff::u32 Magic;                          /** CWAV */
+    ctrff::u16 Endianness = Endianess::Little; /** Default */
+    ctrff::u16 HeaderSize;                     /** Header Size probably */
+    ctrff::u32 Version;                        /** Format Version? */
+    ctrff::u32 FileSize;                       /** File Size */
+    ctrff::u16 NumBlocks;                      /** Number of blocks */
+    ctrff::u16 Reserved;                       /** Reserved */
   };
 
   Header pHeader;
@@ -151,11 +104,11 @@ class CTRFF_API BCWAV {
   void ReadInfoBlock(InfoBlock& block);
   void ReadReferenceTab(ReferenceTable& tab);
 
-  static std::string Endianness2String(const Endianness& e) {
+  static std::string Endianness2String(const Endianess& e) {
     switch (e) {
-      case Little:
+      case Endianess::Little:
         return "Little";
-      case Big:
+      case Endianess::Big:
         return "Big";
       default:
         return "Unknown";
@@ -183,13 +136,13 @@ class CTRFF_API BCWAV {
 
   static std::string Encoding2String(const Encoding& e) {
     switch (e) {
-      case PCM8:
+      case Encoding::PCM8:
         return "PCM8";
-      case PCM16:
+      case Encoding::PCM16:
         return "PCM16";
-      case DSP_ADPCM:
+      case Encoding::DSP_ADPCM:
         return "DSP ADPCM";
-      case IMA_ADPCM:
+      case Encoding::IMA_ADPCM:
         return "IMA ADPCM";
       default:
         return "Unknown";

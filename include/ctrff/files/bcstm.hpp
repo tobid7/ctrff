@@ -2,6 +2,7 @@
 
 #include <ctrff/core/binutil.hpp>
 #include <ctrff/core/types.hpp>
+#include <ctrff/shared/sound.hpp>
 
 namespace ctrff {
 class CTRFF_API BCSTM : public BinFile {
@@ -45,11 +46,7 @@ class CTRFF_API BCSTM : public BinFile {
                                      : loop_end / block_samples);
   }
 
-  /** Internal Data (can be made private with private: but public by default) */
-  enum Endianness : ctrff::u16 {
-    Big = 0xfffe,     ///< Big Endian
-    Little = 0xfeff,  ///< Little Endian
-  };
+  using Endianess = shared::sound::Endianness;
 
   enum ReferenceTypes : ctrff::u16 {
     Ref_ByteTable = 0x0100,
@@ -65,59 +62,11 @@ class CTRFF_API BCSTM : public BinFile {
     Ref_ChannelInfo = 0x4102,
   };
 
-  enum Encoding : ctrff::u8 {
-    PCM8 = 0,
-    PCM16 = 1,
-    /** Only supported encoding in BCSTM-Player */
-    DSP_ADPCM = 2,
-    IMA_ADPCM = 3,
-  };
-
-  struct Reference {
-    Reference() : TypeID(0), Padding(0), Offset(0) {}
-    Reference(ctrff::u16 t, ctrff::u16 p, ctrff::u32 o)
-        : TypeID(t), Padding(p), Offset(o) {}
-
-    template <class Self, class F>
-    static void Visit(Self& s, F&& f) {
-      f(s.TypeID);
-      f(s.Padding);
-      f(s.Offset);
-    }
-
-    ctrff::u16 TypeID;
-    ctrff::u16 Padding;
-    ctrff::u32 Offset; /** null -> uint32_max */
-  };
-
-  struct ReferenceTable {
-    ReferenceTable() : Count(0) {}
-
-    template <class Self, class F>
-    static void Visit(Self& s, F&& f) {
-      f(s.Count);
-      if constexpr (!std::is_const_v<Self>) {
-        s.Refs.resize(s.Count);
-      }
-      f(s.Refs);
-    }
-
-    ctrff::u32 Count;
-    std::vector<Reference> Refs;
-  };
-
-  struct SizedReference {
-    SizedReference() : Size(0) {}
-
-    template <class Self, class F>
-    static void Visit(Self& s, F&& f) {
-      f(s.Ref);
-      f(s.Size);
-    }
-
-    Reference Ref;
-    ctrff::u32 Size;
-  };
+  using Encoding = shared::sound::Encoding;
+  using Reference = shared::sound::Reference;
+  using SizedReference = shared::sound::SizedReference;
+  using ReferenceTable = shared::sound::ReferenceTable;
+  using BlockHeader = shared::sound::BlockHeader;
 
   struct CTRFF_API StreamInfo {
     StreamInfo();
@@ -160,20 +109,6 @@ class CTRFF_API BCSTM : public BinFile {
     Reference SampleDataRef;
   };
 
-  struct BlockHeader {
-    BlockHeader() : Magic(0), Size(0) {}
-    BlockHeader(ctrff::u32 m, ctrff::u32 s) : Magic(m), Size(s) {}
-
-    template <class Self, class F>
-    static void Visit(Self& s, F&& f) {
-      f(s.Magic);
-      f(s.Size);
-    }
-
-    ctrff::u32 Magic;
-    ctrff::u32 Size;
-  };
-
   struct InfoBlock {
     InfoBlock() = default;
 
@@ -202,55 +137,9 @@ class CTRFF_API BCSTM : public BinFile {
     std::vector<ctrff::u8> Data;
   };
 
-  struct DSP_ADPCM_Param {
-    // Lets keep this not clean here :/
-    DSP_ADPCM_Param() {}
-
-    template <class Self, class F>
-    static void Visit(Self& s, F&& f) {
-      f(s.Coefficients);
-    }
-
-    ctrff::u16 Coefficients[0x10];
-  };
-
-  struct DSP_ADPCM_Context {
-    DSP_ADPCM_Context()
-        : PredictorScale(0),
-          Reserved(0),
-          PreviousSample(0),
-          SecondPreviousSample(0) {}
-
-    template <class Self, class F>
-    static void Visit(Self& s, F&& f) {
-      f(s.PredictorScale);
-      f(s.Reserved);
-      f(s.PreviousSample);
-      f(s.SecondPreviousSample);
-    }
-
-    ctrff::u8 PredictorScale;
-    ctrff::u8 Reserved;
-    ctrff::u16 PreviousSample;
-    ctrff::u16 SecondPreviousSample;
-  };
-
-  struct DSP_ADPCM_Info {
-    DSP_ADPCM_Info() : Padding(0) {}
-
-    template <class Self, class F>
-    static void Visit(Self& s, F&& f) {
-      f(s.Param);
-      f(s.Context);
-      f(s.LoopContext);
-      f(s.Padding);
-    }
-
-    DSP_ADPCM_Param Param;
-    DSP_ADPCM_Context Context;
-    DSP_ADPCM_Context LoopContext;
-    ctrff::u16 Padding;
-  };
+  using DSP_ADPCM_Param = shared::sound::DSP_ADPCM_Param;
+  using DSP_ADPCM_Context = shared::sound::DSP_ADPCM_Context;
+  using DSP_ADPCM_Info = shared::sound::DSP_ADPCM_Info;
 
   struct ByteTable {
     ByteTable(ctrff::u32 size = 0) : Size(size) {}
@@ -291,7 +180,7 @@ class CTRFF_API BCSTM : public BinFile {
     // Warum sieht dass so ~~nicht~~ gut aus...
     Header()
         : Magic(0),
-          Endianness(Little),
+          Endianness(Endianess::Little),
           HeaderSize(0),
           Version(0),
           FileSize(0),
@@ -309,13 +198,13 @@ class CTRFF_API BCSTM : public BinFile {
       f(s.Reserved);
     }
 
-    ctrff::u32 Magic;               /** CSTM */
-    ctrff::u16 Endianness = Little; /** Default */
-    ctrff::u16 HeaderSize;          /** Header Size probably */
-    ctrff::u32 Version;             /** Format Version? */
-    ctrff::u32 FileSize;            /** File Size */
-    ctrff::u16 NumBlocks;           /** Number of blocks */
-    ctrff::u16 Reserved;            /** Reserved */
+    ctrff::u32 Magic;                          /** CSTM */
+    ctrff::u16 Endianness = Endianess::Little; /** Default */
+    ctrff::u16 HeaderSize;                     /** Header Size probably */
+    ctrff::u32 Version;                        /** Format Version? */
+    ctrff::u32 FileSize;                       /** File Size */
+    ctrff::u16 NumBlocks;                      /** Number of blocks */
+    ctrff::u16 Reserved;                       /** Reserved */
   };
 
   Header pHeader;
@@ -329,11 +218,11 @@ class CTRFF_API BCSTM : public BinFile {
 
   void ReadInfoBlock(Stream& f, InfoBlock& block);
 
-  static std::string Endianness2String(const Endianness& e) {
+  static std::string Endianness2String(const Endianess& e) {
     switch (e) {
-      case Little:
+      case Endianess::Little:
         return "Little";
-      case Big:
+      case Endianess::Big:
         return "Big";
       default:
         return "Unknown";
@@ -371,13 +260,13 @@ class CTRFF_API BCSTM : public BinFile {
 
   static std::string Encoding2String(const Encoding& e) {
     switch (e) {
-      case PCM8:
+      case Encoding::PCM8:
         return "PCM8";
-      case PCM16:
+      case Encoding::PCM16:
         return "PCM16";
-      case DSP_ADPCM:
+      case Encoding::DSP_ADPCM:
         return "DSP ADPCM";
-      case IMA_ADPCM:
+      case Encoding::IMA_ADPCM:
         return "IMA ADPCM";
       default:
         return "Unknown";

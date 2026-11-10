@@ -7,6 +7,9 @@ inline ctrff::u32 Swap32(ctrff::u32 in) {
 }
 
 namespace ctrff {
+CTRFF_API void BCWAV::Write(Stream& f) const {}
+CTRFF_API void BCWAV::Read(Stream& f) {}
+
 CTRFF_API void BCWAV::LoadFile(const std::string& path) {
   CleanUp();
   pFile.open(path, std::ios::in | std::ios::binary);
@@ -16,7 +19,7 @@ CTRFF_API void BCWAV::LoadFile(const std::string& path) {
 
   pReader.Read(pHeader.Magic);
   pReader.Read(pHeader.Endianness);
-  if (pHeader.Endianness == Big) {
+  if (pHeader.Endianness == Endianess::Big) {
     pHeader.Magic = Swap32(pHeader.Magic);
   }
   /** Check for 'CWAV' */
@@ -69,7 +72,7 @@ CTRFF_API void BCWAV::ReadInfoBlock(InfoBlock& block) {
     ReadReference(r);
     block.ChannelInfoRefs.push_back(r);
   }
-  if (block.Encoding == DSP_ADPCM) {
+  if (block.Encoding == Encoding::DSP_ADPCM) {
     for (size_t i = 0; i < block.ChannelInfoRefs.size(); i++) {
       size_t off = pInfoBlockRef.Ref.Offset;
       off += sizeof(BlockHeader);
