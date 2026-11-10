@@ -37,6 +37,11 @@ class BinFile {
 
  protected:
   template <typename T>
+  struct IsVector : std::false_type {};
+  template <typename T, typename A>
+  struct IsVector<std::vector<T, A>> : std::true_type {};
+
+  template <typename T>
   void ReadT(Stream& s, T& v) const {
     if constexpr (std::is_arithmetic_v<T>) {
       s.read(reinterpret_cast<char*>(&v), sizeof(T));
@@ -45,6 +50,13 @@ class BinFile {
       using E = std::remove_extent_t<T>;
       if constexpr (sizeof(E) == 1 && std::is_arithmetic_v<E>) {
         s.read(reinterpret_cast<char*>(v), sizeof(T));
+      } else {
+        for (auto& e : v) ReadT(s, e);
+      }
+    } else if constexpr (IsVector<T>::value) {
+      using E = typename T::value_type;
+      if constexpr (sizeof(E) == 1 && std::is_arithmetic_v<E>) {
+        s.read(reinterpret_cast<char*>(v.data()), v.size());  // fast
       } else {
         for (auto& e : v) ReadT(s, e);
       }
@@ -62,6 +74,13 @@ class BinFile {
       using E = std::remove_extent_t<T>;
       if constexpr (sizeof(E) == 1 && std::is_arithmetic_v<E>) {
         s.write(reinterpret_cast<const char*>(v), sizeof(T));
+      } else {
+        for (const auto& e : v) WriteT(s, e);
+      }
+    } else if constexpr (IsVector<T>::value) {
+      using E = typename T::value_type;
+      if constexpr (sizeof(E) == 1 && std::is_arithmetic_v<E>) {
+        s.write(reinterpret_cast<const char*>(v.data()), v.size());  // fast
       } else {
         for (const auto& e : v) WriteT(s, e);
       }
