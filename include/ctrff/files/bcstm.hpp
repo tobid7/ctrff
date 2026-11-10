@@ -6,18 +6,15 @@
 namespace ctrff {
 class CTRFF_API BCSTM : public BinFile {
  public:
-  BCSTM() : pReader(pFile), BinFile(true) {}
+  BCSTM() : BinFile(true) {}
   ~BCSTM() { CleanUp(); }
 
   void Write(Stream& f) const override;
   void Read(Stream& f) override;
 
-  void LoadFile(const std::string& path);
   void CleanUp();
   void ReadGotoBeginning(bool use_loop_beg = false);
   void ReadBlock(ctrff::u32 block, ctrff::u8* ref);
-  void ReadGotoBeginningV2(bool use_loop_beg = false);
-  void ReadBlockV2(ctrff::u32 block, ctrff::u8* ref);
 
   /** Some useful Getters */
   ctrff::u8 GetNumChannels() const {
@@ -329,17 +326,8 @@ class CTRFF_API BCSTM : public BinFile {
   SD_Block pSeekBlock;
   SD_Block pDataBlock;
   std::vector<DSP_ADPCM_Info> pDSP_ADPCM_Info;
-  /** File Stream */
-  FileStream pFile;
-  /** Endianness based reader */
-  BinUtil pReader;
 
-  void ReadReference(Reference& ref);
-  void ReadSizedReference(SizedReference& ref);
-  void ReadInfoBlock(InfoBlock& block);
-  void ReadSeekBlock(SD_Block& block);
-  void ReadReferenceTab(ReferenceTable& tab);
-  void ReadInfoBlockV2(Stream& f, InfoBlock& block);
+  void ReadInfoBlock(Stream& f, InfoBlock& block);
 
   static std::string Endianness2String(const Endianness& e) {
     switch (e) {
