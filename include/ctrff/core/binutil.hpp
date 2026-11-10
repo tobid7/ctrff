@@ -5,24 +5,34 @@
 namespace ctrff {
 class BinFile {
  public:
-  BinFile() = default;
-  virtual ~BinFile() = default;
+  BinFile(bool streaming = false) : pStreaming(streaming) {}
+  virtual ~BinFile() { UnloadStream(); }
 
   virtual void Load(const std::string& path) {
-    FileStream f(path, std::ios::in | std::ios::binary);
-    Read(f);
-    f.close();
+    if (pStreaming) {
+      UnloadStream();
+      pStream = new FileStream(path, std::ios::in | std::ios::binary);
+      Read(*pStream);
+    } else {
+      FileStream f(path, std::ios::in | std::ios::binary);
+      Read(f);
+    }
   }
 
   virtual void Load(const std::vector<u8>& mem) {
-    MemoryStream ms(mem);
-    Read(ms);
+    if (pStreaming) {
+      UnloadStream();
+      pStream = new MemoryStream(mem);
+      Read(*pStream);
+    } else {
+      MemoryStream f(mem);
+      Read(f);
+    }
   }
 
   virtual void Save(const std::string& path) {
     FileStream f(path, std::ios::out | std::ios::binary);
     Write(f);
-    f.close();
   }
 
   virtual void Save(std::vector<u8>& mem) {
@@ -36,6 +46,22 @@ class BinFile {
   void SetEndianess(bool big) const { pBig = big; }
 
  protected:
+  void Seek(size_t off, std::ios::seekdir dir = std::ios::beg) {
+    if (!pStream) return;
+    pStream->seekg(off, dir);
+  }
+
+  size_t TellG() const {
+    if (!pStream) return 0;
+    return pStream->tellg();
+  }
+
+  void ReadRaw(char* ptr, size_t bytes) {
+    if (pStream) {
+      pStream->read(ptr, bytes);
+    }
+  }
+
   template <typename T>
   struct IsVector : std::false_type {};
   template <typename T, typename A>
@@ -90,6 +116,16 @@ class BinFile {
   }
 
  private:
+  void UnloadStream() {
+    if (pStream) {
+      delete pStream;
+      pStream = nullptr;
+    }
+  }
+
+  Stream* pStream = nullptr;
+  bool pStreaming = true;
+
   bool NeedSwap() const {
     return pBig != (std::endian::native == std::endian::big);
   }
