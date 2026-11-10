@@ -1,3 +1,4 @@
+#include <ctrff/compression/lz11.hpp>
 #include <ctrff/files/cbmd.hpp>
 
 namespace ctrff {
@@ -11,6 +12,14 @@ CTRFF_API void CBMD::Read(Stream& f) {
   ReadT(f, pHeader);
   if (pHeader.Magic != 0x444d4243) {
     throw std::runtime_error("[ctrff] CBMD: Not a banner file!");
+  }
+  // decompression (streaming)
+  for (int i = 0; i < 14; i++) {
+    if (pHeader.Offsets[i] == 0 || pHeader.Offsets[i] >= f.size()) continue;
+    f.seekg(pHeader.Offsets[i], std::ios::beg);
+    size_t bytes_read = 0;
+    auto cgfx = LZ11::DecompressStream(f, bytes_read);
+    pCgfxSizes[i] = cgfx.size();
   }
 }
 }  // namespace ctrff
