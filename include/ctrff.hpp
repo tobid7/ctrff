@@ -8,6 +8,7 @@
 #include <ctrff/files/bcstm.hpp>
 #include <ctrff/files/bcwav.hpp>
 #include <ctrff/files/cbmd.hpp>
+#include <ctrff/files/cgfx.hpp>
 #include <ctrff/files/darc.hpp>
 #include <ctrff/files/smdh.hpp>
 #include <ctrff/textures/pica.hpp>

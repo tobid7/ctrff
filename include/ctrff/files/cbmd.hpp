@@ -2,10 +2,10 @@
 
 #include <cstring>
 #include <ctrff/core/binutil.hpp>
-// #include <ctrff/files/cgfx.hpp> // to be implemented
 #include <ctrff/core/helper.hpp>
 #include <ctrff/core/types.hpp>
 #include <ctrff/files/bcwav.hpp>
+#include <ctrff/files/cgfx.hpp>
 #include <filesystem>
 
 namespace ctrff {
@@ -46,7 +46,7 @@ class CTRFF_API CBMD : public BinFile {
 
  private:
   Header pHeader;
-  // std::vector<CGFX> pCgfxs;
+  std::vector<CGFX> pCgfxs;
   std::array<u32, 0xe> pCgfxSizes;
   BCWAV pBcwav;
   u32 pBcwavSize;

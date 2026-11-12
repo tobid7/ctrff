@@ -36,6 +36,7 @@ set(CTRFF_SOURCE
     source/files/bcstm.cpp
     source/files/bcwav.cpp
     source/files/cbmd.cpp
+    source/files/cgfx.cpp
     source/files/darc.cpp
     source/files/smdh.cpp
     source/textures/etc1.cpp
