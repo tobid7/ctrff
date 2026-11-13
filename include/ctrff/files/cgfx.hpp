@@ -13,6 +13,25 @@ class CTRFF_API CGFX : public BinFile {
   void Write(Stream& f) const override;
   void Read(Stream& f) override;
 
+  enum class DataType {
+    Models,
+    Textures,
+    Luts,
+    Materials,
+    Shaders,
+    Cameras,
+    Lights,
+    Fog,
+    Environments,
+    SkeletonAnimations,
+    TextureAnimations,
+    VisibilityAnimations,
+    CameraAnimations,
+    LightAnimations,
+    Emitters,
+    Unknown,
+  };
+
   struct Header {
     Header() {
       Magic = 0;
@@ -39,6 +58,23 @@ class CTRFF_API CGFX : public BinFile {
     ctrff::u32 Revision;
     ctrff::u32 FileSize;
     ctrff::u32 Entries;
+  };
+
+  struct CgfxDictHeader {
+    ctrff::u32 Magic;  // 0x41544144 'DATA'
+    ctrff::u32 DictSize;
+    ctrff::u32 EntryCount;
+    ctrff::u32 Unknown1;
+    ctrff::u16 Unknown2;
+    std::array<ctrff::u8, 0xa> Unknown3;
+  };
+
+  struct CgfxDictEntry {
+    ctrff::u32 Unknown1;
+    ctrff::u16 Unkwnown2;
+    ctrff::u16 Unkwnown3;
+    ctrff::u32 Offset2sym;
+    ctrff::u32 Offset2obj;
   };
 
  private:
