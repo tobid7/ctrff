@@ -18,7 +18,7 @@ class CTRFF_API BCWAV : public BinFile {
   void ReadGotoBeginning(bool use_loop_beg = false);
   void ReadBlock(ctrff::u32 block, ctrff::u8* ref);
 
-  using Endianess = shared::sound::Endianness;
+  using Endianness = shared::sound::Endianness;
   enum ReferenceTypes : ctrff::u16 {
     Ref_DSP_ADPCM_Info = 0x0300,
     Ref_IMA_ADPCM_Info = 0x0301,
@@ -73,14 +73,14 @@ class CTRFF_API BCWAV : public BinFile {
   struct Header {
     Header()
         : Magic(0),
-          Endianness(Endianess::Little),
+          Endianness(Endianness::Little),
           HeaderSize(0),
           Version(0),
           FileSize(0),
           NumBlocks(0),
           Reserved(0) {}
     ctrff::u32 Magic;                          /** CWAV */
-    ctrff::u16 Endianness = Endianess::Little; /** Default */
+    ctrff::u16 Endianness = Endianness::Little; /** Default */
     ctrff::u16 HeaderSize;                     /** Header Size probably */
     ctrff::u32 Version;                        /** Format Version? */
     ctrff::u32 FileSize;                       /** File Size */
@@ -104,11 +104,11 @@ class CTRFF_API BCWAV : public BinFile {
   void ReadInfoBlock(InfoBlock& block);
   void ReadReferenceTab(ReferenceTable& tab);
 
-  static std::string Endianness2String(const Endianess& e) {
+  static std::string Endianness2String(const Endianness& e) {
     switch (e) {
-      case Endianess::Little:
+      case Endianness::Little:
         return "Little";
-      case Endianess::Big:
+      case Endianness::Big:
         return "Big";
       default:
         return "Unknown";

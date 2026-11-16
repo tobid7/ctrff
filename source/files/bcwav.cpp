@@ -19,7 +19,7 @@ CTRFF_API void BCWAV::LoadFile(const std::string& path) {
 
   pReader.Read(pHeader.Magic);
   pReader.Read(pHeader.Endianness);
-  if (pHeader.Endianness == Endianess::Big) {
+  if (pHeader.Endianness == Endianness::Big) {
     pHeader.Magic = Swap32(pHeader.Magic);
   }
   /** Check for 'CWAV' */

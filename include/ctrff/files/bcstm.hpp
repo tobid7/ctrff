@@ -46,7 +46,7 @@ class CTRFF_API BCSTM : public BinFile {
                                      : loop_end / block_samples);
   }
 
-  using Endianess = shared::sound::Endianness;
+  using Endianness = shared::sound::Endianness;
 
   enum ReferenceTypes : ctrff::u16 {
     Ref_ByteTable = 0x0100,
@@ -180,7 +180,7 @@ class CTRFF_API BCSTM : public BinFile {
     // Warum sieht dass so ~~nicht~~ gut aus...
     Header()
         : Magic(0),
-          Endianness(Endianess::Little),
+          Endianness(Endianness::Little),
           HeaderSize(0),
           Version(0),
           FileSize(0),
@@ -198,13 +198,13 @@ class CTRFF_API BCSTM : public BinFile {
       f(s.Reserved);
     }
 
-    ctrff::u32 Magic;                          /** CSTM */
-    ctrff::u16 Endianness = Endianess::Little; /** Default */
-    ctrff::u16 HeaderSize;                     /** Header Size probably */
-    ctrff::u32 Version;                        /** Format Version? */
-    ctrff::u32 FileSize;                       /** File Size */
-    ctrff::u16 NumBlocks;                      /** Number of blocks */
-    ctrff::u16 Reserved;                       /** Reserved */
+    ctrff::u32 Magic;                           /** CSTM */
+    ctrff::u16 Endianness = Endianness::Little; /** Default */
+    ctrff::u16 HeaderSize;                      /** Header Size probably */
+    ctrff::u32 Version;                         /** Format Version? */
+    ctrff::u32 FileSize;                        /** File Size */
+    ctrff::u16 NumBlocks;                       /** Number of blocks */
+    ctrff::u16 Reserved;                        /** Reserved */
   };
 
   Header pHeader;
@@ -218,11 +218,11 @@ class CTRFF_API BCSTM : public BinFile {
 
   void ReadInfoBlock(Stream& f, InfoBlock& block);
 
-  static std::string Endianness2String(const Endianess& e) {
+  static std::string Endianness2String(const Endianness& e) {
     switch (e) {
-      case Endianess::Little:
+      case Endianness::Little:
         return "Little";
-      case Endianess::Big:
+      case Endianness::Big:
         return "Big";
       default:
         return "Unknown";
