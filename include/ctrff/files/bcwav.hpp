@@ -5,18 +5,48 @@
 #include <ctrff/shared/sound.hpp>
 
 namespace ctrff {
-class CTRFF_API BCWAV : public BinFile {
+class CTRFF_API BCWAV : public SoundFile {
  public:
-  BCWAV() : pReader(pFile), BinFile(true) {}
+  BCWAV() {}
   ~BCWAV() { CleanUp(); }
 
   void Write(Stream& f) const override;
   void Read(Stream& f) override;
 
-  void LoadFile(const std::string& path);
-  void CleanUp();
-  void ReadGotoBeginning(bool use_loop_beg = false);
-  void ReadBlock(ctrff::u32 block, ctrff::u8* ref);
+  void CleanUp() override;
+  // placeholder
+  void ReadGotoBeginning(bool use_loop_beg = false) override {}
+  void ReadBlock(ctrff::u8 chn, ctrff::u32 block, ctrff::u8* ref) override;
+
+  /**
+   * As BCWAV has no Blocks so we split the Samples into virtual ones
+   * 0x3800 samples = 0x2000 bytes DSP ADPCM (multiple of 14 samples)
+   */
+  static constexpr ctrff::u32 BlockSamples = 0x3800;
+
+  ctrff::u8 GetEncoding() const override { return pInfoBlock.Encoding; }
+  ctrff::u8 GetNumChannels() const override {
+    return pInfoBlock.ChannelInfoTab.Count;
+  }
+  ctrff::u32 GetSampleRate() const override { return pInfoBlock.SampleRate; }
+  /** LoopEndFrame is also the total number of samples */
+  ctrff::u32 GetNumSamples() const { return pInfoBlock.LoopEndFrame; }
+  ctrff::u32 GetBlockSize() const override {
+    return SamplesToBytes(BlockSamples);
+  }
+  ctrff::u32 GetNumBlocks() const override {
+    return (GetNumSamples() + BlockSamples - 1) / BlockSamples;
+  }
+  ctrff::u32 GetBlockSamples() const override { return BlockSamples; }
+  ctrff::u32 GetLastBlockSamples() const override {
+    if (!GetNumBlocks()) return 0;
+    return GetNumSamples() - (GetNumBlocks() - 1) * BlockSamples;
+  }
+  bool IsLooping() const override { return pInfoBlock.Loop; }
+  ctrff::u32 GetLoopStart() const override {
+    return pInfoBlock.LoopStartFrame / BlockSamples;
+  }
+  ctrff::u32 GetLoopEnd() const override { return GetNumBlocks(); }
 
   using Endianness = shared::sound::Endianness;
   enum ReferenceTypes : ctrff::u16 {
@@ -33,6 +63,24 @@ class CTRFF_API BCWAV : public BinFile {
   using SizedReference = shared::sound::SizedReference;
   using ReferenceTable = shared::sound::ReferenceTable;
   using BlockHeader = shared::sound::BlockHeader;
+  using DSP_ADPCM_Param = shared::sound::DSP_ADPCM_Param;
+  using DSP_ADPCM_Context = shared::sound::DSP_ADPCM_Context;
+  using DSP_ADPCM_Info = shared::sound::DSP_ADPCM_Info;
+
+  struct ChannelInfo {
+    ChannelInfo() : Reserved(0) {}
+
+    template <class Self, class F>
+    static void Visit(Self& s, F&& f) {
+      f(s.SampleRef);
+      f(s.AdpcmInfoRef);
+      f(s.Reserved);
+    }
+
+    Reference SampleRef;    /** Relative to DataBlock + 8 */
+    Reference AdpcmInfoRef; /** Relative to the ChannelInfo itself */
+    ctrff::u32 Reserved;
+  };
 
   struct InfoBlock {
     InfoBlock()
@@ -43,6 +91,20 @@ class CTRFF_API BCWAV : public BinFile {
           LoopStartFrame(0),
           LoopEndFrame(0),
           Reserved(0) {}
+
+    template <class Self, class F>
+    static void Visit(Self& s, F&& f) {
+      f(s.Header);
+      f(s.Encoding);
+      f(s.Loop);
+      f(s.Padding);
+      f(s.SampleRate);
+      f(s.LoopStartFrame);
+      f(s.LoopEndFrame);
+      f(s.Reserved);
+      f(s.ChannelInfoTab);
+    }
+
     BlockHeader Header;
     ctrff::u8 Encoding;
     ctrff::u8 Loop;
@@ -51,24 +113,9 @@ class CTRFF_API BCWAV : public BinFile {
     ctrff::u32 LoopStartFrame;
     ctrff::u32 LoopEndFrame;
     ctrff::u32 Reserved;
-    ReferenceTable ChannelInfoTab;
-    std::vector<Reference> ChannelInfoRefs; /** The refs of the refs ?? */
+    ReferenceTable ChannelInfoTab; /** Offsets relative to the table */
+    std::vector<ChannelInfo> ChannelInfos;
   };
-
-  struct DataBlock {
-    DataBlock() {
-      for (int i = 0; i < 3; i++) {
-        Padding[i] = 0;
-      }
-    }
-    BlockHeader Header;
-    ctrff::u32 Padding[3];
-    std::vector<ctrff::u8> Data;
-  };
-
-  using DSP_ADPCM_Param = shared::sound::DSP_ADPCM_Param;
-  using DSP_ADPCM_Context = shared::sound::DSP_ADPCM_Context;
-  using DSP_ADPCM_Info = shared::sound::DSP_ADPCM_Info;
 
   struct Header {
     Header()
@@ -79,30 +126,34 @@ class CTRFF_API BCWAV : public BinFile {
           FileSize(0),
           NumBlocks(0),
           Reserved(0) {}
-    ctrff::u32 Magic;                          /** CWAV */
+
+    template <class Self, class F>
+    static void Visit(Self& s, F&& f) {
+      f(s.Magic);
+      f(s.Endianness);
+      f(s.HeaderSize);
+      f(s.Version);
+      f(s.FileSize);
+      f(s.NumBlocks);
+      f(s.Reserved);
+    }
+
+    ctrff::u32 Magic;                           /** CWAV */
     ctrff::u16 Endianness = Endianness::Little; /** Default */
-    ctrff::u16 HeaderSize;                     /** Header Size probably */
-    ctrff::u32 Version;                        /** Format Version? */
-    ctrff::u32 FileSize;                       /** File Size */
-    ctrff::u16 NumBlocks;                      /** Number of blocks */
-    ctrff::u16 Reserved;                       /** Reserved */
+    ctrff::u16 HeaderSize;                      /** Header Size probably */
+    ctrff::u32 Version;                         /** Format Version? */
+    ctrff::u32 FileSize;                        /** File Size */
+    ctrff::u16 NumBlocks;                       /** Number of blocks */
+    ctrff::u16 Reserved;                        /** Reserved */
   };
 
   Header pHeader;
   SizedReference pInfoBlockRef;
   SizedReference pDataBlockRef;
   InfoBlock pInfoBlock;
-  DataBlock pDataBlock;
-  std::vector<DSP_ADPCM_Info> pDSP_ADPCM_Info;
-  /** File Stream */
-  FileStream pFile;
-  /** Endianness based reader */
-  BinUtil pReader;
 
-  void ReadReference(Reference& ref);
-  void ReadSizedReference(SizedReference& ref);
-  void ReadInfoBlock(InfoBlock& block);
-  void ReadReferenceTab(ReferenceTable& tab);
+  void ReadInfoBlock(Stream& f, InfoBlock& block);
+  ctrff::u32 SamplesToBytes(ctrff::u32 samples) const;
 
   static std::string Endianness2String(const Endianness& e) {
     switch (e) {

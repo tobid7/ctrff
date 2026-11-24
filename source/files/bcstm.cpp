@@ -52,7 +52,8 @@ CTRFF_API void BCSTM::ReadGotoBeginning(bool use_loop_beg) {
   }
 }
 
-CTRFF_API void BCSTM::ReadBlock(ctrff::u32 block, ctrff::u8* ref) {
+CTRFF_API void BCSTM::ReadBlock(ctrff::u8 chn, ctrff::u32 block,
+                                ctrff::u8* ref) {
   if (!ref) {
     throw std::runtime_error("BCSTM: pointer ref is nullptr!");
   }

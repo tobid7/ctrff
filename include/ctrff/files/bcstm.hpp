@@ -5,40 +5,43 @@
 #include <ctrff/shared/sound.hpp>
 
 namespace ctrff {
-class CTRFF_API BCSTM : public BinFile {
+class CTRFF_API BCSTM : public SoundFile {
  public:
-  BCSTM() : BinFile(true) {}
+  BCSTM() {}
   ~BCSTM() { CleanUp(); }
 
   void Write(Stream& f) const override;
   void Read(Stream& f) override;
 
-  void CleanUp();
-  void ReadGotoBeginning(bool use_loop_beg = false);
-  void ReadBlock(ctrff::u32 block, ctrff::u8* ref);
+  void CleanUp() override;
+  void ReadGotoBeginning(bool use_loop_beg = false) override;
+  void ReadBlock(ctrff::u8 chn, ctrff::u32 block, ctrff::u8* ref) override;
 
   /** Some useful Getters */
-  ctrff::u8 GetNumChannels() const {
+  ctrff::u8 GetEncoding() const override {
+    return pInfoBlock.StreamInfo.Encoding;
+  }
+  ctrff::u8 GetNumChannels() const override {
     return pInfoBlock.StreamInfo.ChannelCount;
   }
-  ctrff::u32 GetSampleRate() const { return pInfoBlock.StreamInfo.SampleRate; }
-  ctrff::u32 GetBlockSize() const {
+  ctrff::u32 GetSampleRate() const override { return pInfoBlock.StreamInfo.SampleRate; }
+  ctrff::u32 GetBlockSize() const override {
     return pInfoBlock.StreamInfo.SampleBlockSize;
   }
-  ctrff::u32 GetNumBlocks() const {
+  ctrff::u32 GetNumBlocks() const override {
     return pInfoBlock.StreamInfo.SampleBlockNum;
   }
-  ctrff::u32 GetBlockSamples() const {
+  ctrff::u32 GetBlockSamples() const override {
     return pInfoBlock.StreamInfo.SampleBlockSampleNum;
   }
-  ctrff::u32 GetLastBlockSamples() const {
+  ctrff::u32 GetLastBlockSamples() const override {
     return pInfoBlock.StreamInfo.LastSampleBlockSampleNum;
   }
-  bool IsLooping() const { return pInfoBlock.StreamInfo.Loop; }
-  ctrff::u32 GetLoopStart() const {
+  bool IsLooping() const override { return pInfoBlock.StreamInfo.Loop; }
+  ctrff::u32 GetLoopStart() const override {
     return pInfoBlock.StreamInfo.LoopStartFrame / GetBlockSamples();
   }
-  ctrff::u32 GetLoopEnd() const {
+  ctrff::u32 GetLoopEnd() const override {
     /** Get temp references for better readability */
     const ctrff::u32& loop_end = pInfoBlock.StreamInfo.LoopEndFrame;
     const ctrff::u32& block_samples = GetBlockSamples();
@@ -214,7 +217,6 @@ class CTRFF_API BCSTM : public BinFile {
   InfoBlock pInfoBlock;
   SD_Block pSeekBlock;
   SD_Block pDataBlock;
-  std::vector<DSP_ADPCM_Info> pDSP_ADPCM_Info;
 
   void ReadInfoBlock(Stream& f, InfoBlock& block);
 

@@ -129,4 +129,28 @@ struct DSP_ADPCM_Info {
 };
 }  // namespace sound
 }  // namespace shared
+
+/** Base for BCSTM and BCWAV */
+class CTRFF_API SoundFile : public BinFile {
+ public:
+  SoundFile() : BinFile(true) {}
+  virtual ~SoundFile() = default;
+
+  virtual void CleanUp() = 0;
+  virtual void ReadGotoBeginning(bool use_loop_beg = false) = 0;
+  virtual void ReadBlock(ctrff::u8 chn, ctrff::u32 block, ctrff::u8* ref) = 0;
+
+  virtual ctrff::u8 GetEncoding() const = 0;
+  virtual ctrff::u8 GetNumChannels() const = 0;
+  virtual ctrff::u32 GetSampleRate() const = 0;
+  virtual ctrff::u32 GetBlockSize() const = 0;
+  virtual ctrff::u32 GetNumBlocks() const = 0;
+  virtual ctrff::u32 GetBlockSamples() const = 0;
+  virtual ctrff::u32 GetLastBlockSamples() const = 0;
+  virtual bool IsLooping() const = 0;
+  virtual ctrff::u32 GetLoopStart() const = 0;
+  virtual ctrff::u32 GetLoopEnd() const = 0;
+
+  std::vector<shared::sound::DSP_ADPCM_Info> pDSP_ADPCM_Info;
+};
 }  // namespace ctrff
